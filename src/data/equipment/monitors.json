@@ -1,0 +1,67 @@
+[
+  {
+    "id": "atomos-ninja-v",
+    "name": "Atomos Ninja V",
+    "brand": "Atomos",
+    "category": "monitor",
+    "weight": 360,
+    "dimensions": {
+      "width": 151,
+      "height": 92,
+      "depth": 45
+    },
+    "source": {
+      "kind": "official",
+      "reference": "atomos.com — Ninja V",
+      "note": "Sem bateria e sem SSD."
+    }
+  },
+  {
+    "id": "atomos-shinobi-5",
+    "name": "Atomos Shinobi 5\"",
+    "brand": "Atomos",
+    "category": "monitor",
+    "weight": 196,
+    "dimensions": {
+      "width": 151,
+      "height": 92,
+      "depth": 31
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "smallhd-indie-7",
+    "name": "SmallHD Indie 7",
+    "brand": "SmallHD",
+    "category": "monitor",
+    "weight": 450,
+    "dimensions": {
+      "width": 195,
+      "height": 125,
+      "depth": 30
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "generic-monitor-5",
+    "name": "Monitor 5\" (genérico)",
+    "brand": "Genérico",
+    "category": "monitor",
+    "weight": 220,
+    "dimensions": {
+      "width": 140,
+      "height": 90,
+      "depth": 25
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

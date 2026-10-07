@@ -1,0 +1,105 @@
+[
+  {
+    "id": "sony-np-fz100",
+    "name": "Sony NP-FZ100",
+    "brand": "Sony",
+    "category": "battery",
+    "weight": 83,
+    "dimensions": {
+      "width": 37.6,
+      "height": 23.3,
+      "depth": 50.6
+    },
+    "source": {
+      "kind": "official",
+      "reference": "sony.com — NP-FZ100",
+      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+    },
+    "metadata": {
+      "internal": true
+    }
+  },
+  {
+    "id": "canon-lp-e6nh",
+    "name": "Canon LP-E6NH",
+    "brand": "Canon",
+    "category": "battery",
+    "weight": 80,
+    "dimensions": {
+      "width": 38,
+      "height": 21,
+      "depth": 56
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    },
+    "metadata": {
+      "internal": true
+    }
+  },
+  {
+    "id": "sony-bp-u70",
+    "name": "Sony BP-U70",
+    "brand": "Sony",
+    "category": "battery",
+    "weight": 400,
+    "dimensions": {
+      "width": 40,
+      "height": 98,
+      "depth": 70
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "generic-np-f970",
+    "name": "NP-F970 (genérica)",
+    "brand": "Genérico",
+    "category": "battery",
+    "weight": 300,
+    "dimensions": {
+      "width": 38,
+      "height": 70,
+      "depth": 56
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "generic-vmount-98wh",
+    "name": "V-Mount 98Wh (genérica)",
+    "brand": "Genérico",
+    "category": "battery",
+    "weight": 650,
+    "dimensions": {
+      "width": 96,
+      "height": 150,
+      "depth": 50
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "generic-vmount-mini-50wh",
+    "name": "V-Mount mini 50Wh (genérica)",
+    "brand": "Genérico",
+    "category": "battery",
+    "weight": 350,
+    "dimensions": {
+      "width": 75,
+      "height": 95,
+      "depth": 45
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "fx3-2470-rs4pro",
+    "name": "Sony FX3 + 24-70 GM II + RS 4 Pro",
+    "gimbal": "dji-rs4-pro",
+    "equipment": ["sony-fx3", "sony-np-fz100", "smallrig-cage-fx3", "sony-fe-24-70-gm2", "dji-focus-pro-motor", "atomos-ninja-v", "dji-rs-quick-release-plate"]
+  },
+  {
+    "id": "fx6-24105-rs4pro",
+    "name": "Sony FX6 + 24-105 G + RS 4 Pro",
+    "gimbal": "dji-rs4-pro",
+    "equipment": ["sony-fx6", "generic-cage-fx6", "sony-fe-24-105-g", "sony-bp-u70", "hollyland-mars-400s-pro-tx", "dji-rs-focus-motor-2022", "dji-rs-quick-release-plate"]
+  },
+  {
+    "id": "komodo-35-ronin2",
+    "name": "RED Komodo + Cine 35mm + Ronin 2",
+    "gimbal": "dji-ronin-2",
+    "equipment": ["red-komodo-6k", "generic-cine-35-t15", "generic-vmount-98wh", "smallhd-indie-7", "teradek-bolt-4k-750-tx", "tilta-mirage", "tilta-nucleus-nano-2"]
+  },
+  {
+    "id": "fx3-70200-rs4",
+    "name": "FX3 + 70-200 no RS 4 (teste de limite)",
+    "gimbal": "dji-rs4",
+    "equipment": ["sony-fx3", "sony-np-fz100", "sony-fe-70-200-gm2", "atomos-ninja-v", "rode-videomic-ntg"]
+  }
+]

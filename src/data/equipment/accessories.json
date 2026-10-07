@@ -1,0 +1,72 @@
+[
+  {
+    "id": "generic-counterweight-100",
+    "name": "Contrapeso 100 g",
+    "brand": "Genérico",
+    "category": "accessory",
+    "weight": 100,
+    "dimensions": {
+      "width": 30,
+      "height": 15,
+      "depth": 30
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    },
+    "metadata": {
+      "role": "counterweight"
+    }
+  },
+  {
+    "id": "generic-counterweight-200",
+    "name": "Contrapeso 200 g",
+    "brand": "Genérico",
+    "category": "accessory",
+    "weight": 200,
+    "dimensions": {
+      "width": 40,
+      "height": 18,
+      "depth": 40
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    },
+    "metadata": {
+      "role": "counterweight"
+    }
+  },
+  {
+    "id": "generic-lens-support",
+    "name": "Suporte de lente",
+    "brand": "Genérico",
+    "category": "accessory",
+    "weight": 60,
+    "dimensions": {
+      "width": 30,
+      "height": 40,
+      "depth": 60
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "generic-nato-rail",
+    "name": "Trilho NATO 70mm",
+    "brand": "Genérico",
+    "category": "accessory",
+    "weight": 30,
+    "dimensions": {
+      "width": 20,
+      "height": 10,
+      "depth": 70
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #08090b;
+  --color-ink-900: #0d0f12;
+  --color-ink-850: #111318;
+  --color-ink-800: #161920;
+  --color-ink-700: #1f232c;
+  --color-ink-600: #2a2f3a;
+  --color-ink-500: #3a404d;
+  --color-ink-400: #5b6270;
+  --color-ink-300: #8b919d;
+  --color-ink-200: #b9bec7;
+  --color-ink-100: #e4e6ea;
+
+  --color-tally: #ff3b30;
+  --color-amber: #ffb020;
+  --color-go: #35d07f;
+  --color-stop: #ff4d5e;
+  --color-info: #5ab0ff;
+
+  --color-ax-x: #ff5d5d;
+  --color-ax-y: #5fd38d;
+  --color-ax-z: #5aa8ff;
+
+  --font-sans: ui-sans-serif, "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-ink-950);
+  color: var(--color-ink-100);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Rótulos estilo menu de câmera */
+.label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-300);
+  font-weight: 600;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.panel {
+  background: var(--color-ink-900);
+  border: 1px solid var(--color-ink-700);
+  border-radius: 10px;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-600) transparent;
+}
+
+input[type="range"] {
+  accent-color: var(--color-amber);
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+  opacity: 0.4;
+}
+
+/* campos dentro de caixas com borda já destacam o foco via focus-within */
+input:not([type="range"]):not([type="checkbox"]):focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 1px;
+}

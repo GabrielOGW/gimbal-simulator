@@ -1,0 +1,50 @@
+[
+  {
+    "id": "hollyland-mars-400s-pro-tx",
+    "name": "Hollyland Mars 400S Pro (TX)",
+    "brand": "Hollyland",
+    "category": "transmitter",
+    "weight": 175,
+    "dimensions": {
+      "width": 88,
+      "height": 32,
+      "depth": 112
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "teradek-bolt-4k-750-tx",
+    "name": "Teradek Bolt 4K 750 (TX)",
+    "brand": "Teradek",
+    "category": "transmitter",
+    "weight": 340,
+    "dimensions": {
+      "width": 95,
+      "height": 40,
+      "depth": 130
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "dji-sdr-transmission-tx",
+    "name": "DJI SDR Transmission (TX)",
+    "brand": "DJI",
+    "category": "transmitter",
+    "weight": 120,
+    "dimensions": {
+      "width": 70,
+      "height": 25,
+      "depth": 100
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

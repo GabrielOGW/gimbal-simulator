@@ -1,0 +1,37 @@
+[
+  {
+    "id": "dji-rs-quick-release-plate",
+    "name": "Placa de engate rápido DJI RS (inferior)",
+    "brand": "DJI",
+    "category": "plate",
+    "weight": 90,
+    "dimensions": {
+      "width": 40,
+      "height": 12,
+      "depth": 120
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    },
+    "metadata": {
+      "note": "Fica abaixo da câmera; normalmente incluída no balanceamento."
+    }
+  },
+  {
+    "id": "generic-arca-plate",
+    "name": "Placa Arca-Swiss 120mm (genérica)",
+    "brand": "Genérico",
+    "category": "plate",
+    "weight": 70,
+    "dimensions": {
+      "width": 38,
+      "height": 10,
+      "depth": 120
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

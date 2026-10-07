@@ -1,0 +1,419 @@
+[
+  {
+    "id": "dji-rs4-pro",
+    "name": "DJI RS 4 Pro",
+    "brand": "DJI",
+    "weight": 1600,
+    "payload": {
+      "minimum": 0,
+      "maximum": 4500
+    },
+    "payloadSource": {
+      "kind": "official",
+      "reference": "dji.com — RS 4 Pro especificações",
+      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+    },
+    "axes": {
+      "pan": {
+        "rotationLimitDeg": null
+      },
+      "tilt": {
+        "rotationLimitDeg": {
+          "min": -112,
+          "max": 214
+        }
+      },
+      "roll": {
+        "rotationLimitDeg": {
+          "min": -95,
+          "max": 240
+        }
+      }
+    },
+    "adjustmentRanges": {
+      "plate": {
+        "min": -60,
+        "max": 60
+      },
+      "height": {
+        "min": 15,
+        "max": 110
+      },
+      "roll": {
+        "min": -45,
+        "max": 45
+      },
+      "pan": {
+        "min": -40,
+        "max": 40
+      }
+    },
+    "geometry": {
+      "tiltArmInnerX": 112,
+      "rearClearance": 95,
+      "plateLength": 160
+    },
+    "geometrySource": {
+      "kind": "estimated",
+      "note": "Geometria simplificada para visualização e checagem de interferência."
+    },
+    "mountingSystem": "Manfrotto/Arca (DJI)"
+  },
+  {
+    "id": "dji-rs4",
+    "name": "DJI RS 4",
+    "brand": "DJI",
+    "weight": 1270,
+    "payload": {
+      "minimum": 0,
+      "maximum": 3000
+    },
+    "payloadSource": {
+      "kind": "official",
+      "reference": "dji.com — RS 4 especificações",
+      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+    },
+    "axes": {
+      "pan": {
+        "rotationLimitDeg": null
+      },
+      "tilt": {
+        "rotationLimitDeg": {
+          "min": -112,
+          "max": 214
+        }
+      },
+      "roll": {
+        "rotationLimitDeg": {
+          "min": -95,
+          "max": 240
+        }
+      }
+    },
+    "adjustmentRanges": {
+      "plate": {
+        "min": -55,
+        "max": 55
+      },
+      "height": {
+        "min": 15,
+        "max": 90
+      },
+      "roll": {
+        "min": -40,
+        "max": 40
+      },
+      "pan": {
+        "min": -35,
+        "max": 35
+      }
+    },
+    "geometry": {
+      "tiltArmInnerX": 100,
+      "rearClearance": 85,
+      "plateLength": 140
+    },
+    "geometrySource": {
+      "kind": "estimated",
+      "note": "Geometria simplificada para visualização e checagem de interferência."
+    },
+    "mountingSystem": "Manfrotto/Arca (DJI)"
+  },
+  {
+    "id": "dji-rs4-mini",
+    "name": "DJI RS 4 Mini",
+    "brand": "DJI",
+    "weight": 890,
+    "payload": {
+      "minimum": 0,
+      "maximum": 2000
+    },
+    "payloadSource": {
+      "kind": "official",
+      "reference": "dji.com — RS 4 Mini especificações",
+      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+    },
+    "axes": {
+      "pan": {
+        "rotationLimitDeg": null
+      },
+      "tilt": {
+        "rotationLimitDeg": {
+          "min": -112,
+          "max": 214
+        }
+      },
+      "roll": {
+        "rotationLimitDeg": {
+          "min": -95,
+          "max": 240
+        }
+      }
+    },
+    "adjustmentRanges": {
+      "plate": {
+        "min": -45,
+        "max": 45
+      },
+      "height": {
+        "min": 15,
+        "max": 70
+      },
+      "roll": {
+        "min": -30,
+        "max": 30
+      },
+      "pan": {
+        "min": -25,
+        "max": 25
+      }
+    },
+    "geometry": {
+      "tiltArmInnerX": 85,
+      "rearClearance": 70,
+      "plateLength": 110
+    },
+    "geometrySource": {
+      "kind": "estimated",
+      "note": "Geometria simplificada para visualização e checagem de interferência."
+    },
+    "mountingSystem": "Arca (DJI)"
+  },
+  {
+    "id": "dji-rs3-pro",
+    "name": "DJI RS 3 Pro",
+    "brand": "DJI",
+    "weight": 1500,
+    "payload": {
+      "minimum": 0,
+      "maximum": 4500
+    },
+    "payloadSource": {
+      "kind": "official",
+      "reference": "dji.com — RS 3 Pro especificações",
+      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+    },
+    "axes": {
+      "pan": {
+        "rotationLimitDeg": null
+      },
+      "tilt": {
+        "rotationLimitDeg": {
+          "min": -112,
+          "max": 214
+        }
+      },
+      "roll": {
+        "rotationLimitDeg": {
+          "min": -95,
+          "max": 240
+        }
+      }
+    },
+    "adjustmentRanges": {
+      "plate": {
+        "min": -60,
+        "max": 60
+      },
+      "height": {
+        "min": 15,
+        "max": 105
+      },
+      "roll": {
+        "min": -45,
+        "max": 45
+      },
+      "pan": {
+        "min": -40,
+        "max": 40
+      }
+    },
+    "geometry": {
+      "tiltArmInnerX": 110,
+      "rearClearance": 92,
+      "plateLength": 160
+    },
+    "geometrySource": {
+      "kind": "estimated",
+      "note": "Geometria simplificada para visualização e checagem de interferência."
+    },
+    "mountingSystem": "Manfrotto/Arca (DJI)"
+  },
+  {
+    "id": "dji-ronin-2",
+    "name": "DJI Ronin 2",
+    "brand": "DJI",
+    "weight": 6000,
+    "payload": {
+      "minimum": 0,
+      "maximum": 13600
+    },
+    "payloadSource": {
+      "kind": "official",
+      "reference": "dji.com — Ronin 2 especificações",
+      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+    },
+    "axes": {
+      "pan": {
+        "rotationLimitDeg": null
+      },
+      "tilt": {
+        "rotationLimitDeg": null
+      },
+      "roll": {
+        "rotationLimitDeg": {
+          "min": -220,
+          "max": 220
+        }
+      }
+    },
+    "adjustmentRanges": {
+      "plate": {
+        "min": -120,
+        "max": 120
+      },
+      "height": {
+        "min": 30,
+        "max": 220
+      },
+      "roll": {
+        "min": -90,
+        "max": 90
+      },
+      "pan": {
+        "min": -80,
+        "max": 80
+      }
+    },
+    "geometry": {
+      "tiltArmInnerX": 190,
+      "rearClearance": 160,
+      "plateLength": 300
+    },
+    "geometrySource": {
+      "kind": "estimated",
+      "note": "Geometria simplificada para visualização e checagem de interferência."
+    },
+    "mountingSystem": "Dovetail Ronin 2"
+  },
+  {
+    "id": "zhiyun-crane-4",
+    "name": "Zhiyun Crane 4",
+    "brand": "Zhiyun",
+    "weight": 1800,
+    "payload": {
+      "minimum": 0,
+      "maximum": 6000
+    },
+    "payloadSource": {
+      "kind": "official",
+      "reference": "zhiyun-tech.com — Crane 4",
+      "note": "Carga máxima informada pelo fabricante. Geometria estimada."
+    },
+    "axes": {
+      "pan": {
+        "rotationLimitDeg": null
+      },
+      "tilt": {
+        "rotationLimitDeg": {
+          "min": -120,
+          "max": 210
+        }
+      },
+      "roll": {
+        "rotationLimitDeg": {
+          "min": -110,
+          "max": 250
+        }
+      }
+    },
+    "adjustmentRanges": {
+      "plate": {
+        "min": -60,
+        "max": 60
+      },
+      "height": {
+        "min": 15,
+        "max": 120
+      },
+      "roll": {
+        "min": -50,
+        "max": 50
+      },
+      "pan": {
+        "min": -45,
+        "max": 45
+      }
+    },
+    "geometry": {
+      "tiltArmInnerX": 120,
+      "rearClearance": 100,
+      "plateLength": 170
+    },
+    "geometrySource": {
+      "kind": "estimated",
+      "note": "Geometria simplificada para visualização e checagem de interferência."
+    },
+    "mountingSystem": "Arca/Manfrotto"
+  },
+  {
+    "id": "zhiyun-weebill-3s",
+    "name": "Zhiyun Weebill 3S",
+    "brand": "Zhiyun",
+    "weight": 1100,
+    "payload": {
+      "minimum": 0,
+      "maximum": 3000
+    },
+    "payloadSource": {
+      "kind": "official",
+      "reference": "zhiyun-tech.com — Weebill 3S",
+      "note": "Carga máxima informada pelo fabricante. Geometria estimada."
+    },
+    "axes": {
+      "pan": {
+        "rotationLimitDeg": null
+      },
+      "tilt": {
+        "rotationLimitDeg": {
+          "min": -90,
+          "max": 200
+        }
+      },
+      "roll": {
+        "rotationLimitDeg": {
+          "min": -90,
+          "max": 230
+        }
+      }
+    },
+    "adjustmentRanges": {
+      "plate": {
+        "min": -50,
+        "max": 50
+      },
+      "height": {
+        "min": 15,
+        "max": 80
+      },
+      "roll": {
+        "min": -35,
+        "max": 35
+      },
+      "pan": {
+        "min": -30,
+        "max": 30
+      }
+    },
+    "geometry": {
+      "tiltArmInnerX": 95,
+      "rearClearance": 75,
+      "plateLength": 120
+    },
+    "geometrySource": {
+      "kind": "estimated",
+      "note": "Geometria simplificada para visualização e checagem de interferência."
+    },
+    "mountingSystem": "Arca"
+  }
+]

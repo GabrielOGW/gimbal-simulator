@@ -1,0 +1,18 @@
+[
+  {
+    "id": "smallrig-top-handle",
+    "name": "Alça superior (top handle)",
+    "brand": "SmallRig",
+    "category": "handle",
+    "weight": 140,
+    "dimensions": {
+      "width": 35,
+      "height": 55,
+      "depth": 150
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

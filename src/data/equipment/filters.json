@@ -1,0 +1,34 @@
+[
+  {
+    "id": "generic-vnd-82",
+    "name": "Filtro VND 82mm",
+    "brand": "Genérico",
+    "category": "filter",
+    "weight": 60,
+    "dimensions": {
+      "width": 86,
+      "height": 86,
+      "depth": 12
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "tilta-mirage-vnd",
+    "name": "Tilta Mirage VND (insert)",
+    "brand": "Tilta",
+    "category": "filter",
+    "weight": 90,
+    "dimensions": {
+      "width": 110,
+      "height": 110,
+      "depth": 8
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "dji-focus-pro-motor",
+    "name": "DJI Focus Pro Motor",
+    "brand": "DJI",
+    "category": "follow_focus",
+    "weight": 110,
+    "dimensions": {
+      "width": 40,
+      "height": 75,
+      "depth": 45
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "dji-rs-focus-motor-2022",
+    "name": "DJI RS Focus Motor (2022)",
+    "brand": "DJI",
+    "category": "follow_focus",
+    "weight": 100,
+    "dimensions": {
+      "width": 40,
+      "height": 70,
+      "depth": 45
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "tilta-nucleus-nano-2",
+    "name": "Tilta Nucleus-Nano II (motor)",
+    "brand": "Tilta",
+    "category": "follow_focus",
+    "weight": 85,
+    "dimensions": {
+      "width": 35,
+      "height": 60,
+      "depth": 40
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

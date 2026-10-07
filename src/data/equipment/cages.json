@@ -1,0 +1,50 @@
+[
+  {
+    "id": "smallrig-cage-fx3",
+    "name": "SmallRig Cage para FX3",
+    "brand": "SmallRig",
+    "category": "cage",
+    "weight": 150,
+    "dimensions": {
+      "width": 150,
+      "height": 100,
+      "depth": 70
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "generic-cage-c70",
+    "name": "Cage para Canon C70 (genérica)",
+    "brand": "Genérico",
+    "category": "cage",
+    "weight": 300,
+    "dimensions": {
+      "width": 180,
+      "height": 150,
+      "depth": 110
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "generic-cage-fx6",
+    "name": "Cage para Sony FX6 (genérica)",
+    "brand": "Genérico",
+    "category": "cage",
+    "weight": 280,
+    "dimensions": {
+      "width": 140,
+      "height": 175,
+      "depth": 110
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

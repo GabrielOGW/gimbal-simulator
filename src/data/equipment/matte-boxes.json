@@ -1,0 +1,34 @@
+[
+  {
+    "id": "tilta-mirage",
+    "name": "Tilta Mirage Matte Box",
+    "brand": "Tilta",
+    "category": "matte_box",
+    "weight": 350,
+    "dimensions": {
+      "width": 150,
+      "height": 120,
+      "depth": 70
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  },
+  {
+    "id": "generic-clip-on-95",
+    "name": "Matte box clip-on 95mm (genérica)",
+    "brand": "Genérico",
+    "category": "matte_box",
+    "weight": 250,
+    "dimensions": {
+      "width": 140,
+      "height": 115,
+      "depth": 80
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valor aproximado — confira o seu modelo."
+    }
+  }
+]

@@ -1,0 +1,36 @@
+[
+  {
+    "id": "rode-videomic-ntg",
+    "name": "RØDE VideoMic NTG",
+    "brand": "RØDE",
+    "category": "microphone",
+    "weight": 94,
+    "dimensions": {
+      "width": 21.6,
+      "height": 76,
+      "depth": 171
+    },
+    "source": {
+      "kind": "official",
+      "reference": "rode.com — VideoMic NTG",
+      "note": "Sem suporte de sapata."
+    }
+  },
+  {
+    "id": "sennheiser-mke-600",
+    "name": "Sennheiser MKE 600",
+    "brand": "Sennheiser",
+    "category": "microphone",
+    "weight": 128,
+    "dimensions": {
+      "width": 20,
+      "height": 20,
+      "depth": 256
+    },
+    "source": {
+      "kind": "official",
+      "reference": "sennheiser.com — MKE 600",
+      "note": "Sem suporte/espuma."
+    }
+  }
+]

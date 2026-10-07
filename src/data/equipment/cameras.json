@@ -1,0 +1,300 @@
+[
+  {
+    "id": "sony-fx3",
+    "name": "Sony FX3",
+    "brand": "Sony",
+    "category": "camera",
+    "weight": 640,
+    "dimensions": {
+      "width": 129.7,
+      "height": 77.8,
+      "depth": 84.5
+    },
+    "source": {
+      "kind": "official",
+      "reference": "sony.com — ILME-FX3 especificações",
+      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+    },
+    "mountingPoints": [
+      {
+        "id": "base",
+        "label": "Rosca 1/4\" inferior",
+        "type": "base",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": -38.9
+        }
+      },
+      {
+        "id": "lens",
+        "label": "Encaixe E",
+        "type": "lens_mount",
+        "position": {
+          "x": 0,
+          "y": 42.25,
+          "z": -0.9
+        }
+      }
+    ],
+    "metadata": {
+      "mount": "E",
+      "lensAxisHeightEstimated": true
+    }
+  },
+  {
+    "id": "sony-fx6",
+    "name": "Sony FX6",
+    "brand": "Sony",
+    "category": "camera",
+    "weight": 890,
+    "dimensions": {
+      "width": 116,
+      "height": 153,
+      "depth": 114
+    },
+    "source": {
+      "kind": "official",
+      "reference": "sony.com — ILME-FX6 especificações",
+      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+    },
+    "mountingPoints": [
+      {
+        "id": "base",
+        "label": "Rosca 1/4\" inferior",
+        "type": "base",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": -76.5
+        }
+      },
+      {
+        "id": "lens",
+        "label": "Encaixe E",
+        "type": "lens_mount",
+        "position": {
+          "x": 0,
+          "y": 57.0,
+          "z": -4.5
+        }
+      }
+    ],
+    "metadata": {
+      "mount": "E",
+      "lensAxisHeightEstimated": true
+    }
+  },
+  {
+    "id": "sony-fx9",
+    "name": "Sony FX9",
+    "brand": "Sony",
+    "category": "camera",
+    "weight": 2000,
+    "dimensions": {
+      "width": 151.7,
+      "height": 144.4,
+      "depth": 189.3
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Peso aproximado do corpo; dimensões sem protuberâncias. Conferir na ficha oficial."
+    },
+    "mountingPoints": [
+      {
+        "id": "base",
+        "label": "Rosca 1/4\" inferior",
+        "type": "base",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": -72.2
+        }
+      },
+      {
+        "id": "lens",
+        "label": "Encaixe E",
+        "type": "lens_mount",
+        "position": {
+          "x": 0,
+          "y": 94.65,
+          "z": -2.2
+        }
+      }
+    ],
+    "metadata": {
+      "mount": "E",
+      "lensAxisHeightEstimated": true
+    }
+  },
+  {
+    "id": "canon-c70",
+    "name": "Canon EOS C70",
+    "brand": "Canon",
+    "category": "camera",
+    "weight": 1170,
+    "dimensions": {
+      "width": 160,
+      "height": 130,
+      "depth": 116
+    },
+    "source": {
+      "kind": "official",
+      "reference": "canon — EOS C70 especificações",
+      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+    },
+    "mountingPoints": [
+      {
+        "id": "base",
+        "label": "Rosca 1/4\" inferior",
+        "type": "base",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": -65.0
+        }
+      },
+      {
+        "id": "lens",
+        "label": "Encaixe RF",
+        "type": "lens_mount",
+        "position": {
+          "x": 0,
+          "y": 58.0,
+          "z": -5.0
+        }
+      }
+    ],
+    "metadata": {
+      "mount": "RF",
+      "lensAxisHeightEstimated": true
+    }
+  },
+  {
+    "id": "canon-c300-mk3",
+    "name": "Canon EOS C300 Mark III",
+    "brand": "Canon",
+    "category": "camera",
+    "weight": 1750,
+    "dimensions": {
+      "width": 153,
+      "height": 148,
+      "depth": 165
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Corpo sem alça/monitor. Valores aproximados — conferir."
+    },
+    "mountingPoints": [
+      {
+        "id": "base",
+        "label": "Rosca 1/4\" inferior",
+        "type": "base",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": -74.0
+        }
+      },
+      {
+        "id": "lens",
+        "label": "Encaixe EF",
+        "type": "lens_mount",
+        "position": {
+          "x": 0,
+          "y": 82.5,
+          "z": -4.0
+        }
+      }
+    ],
+    "metadata": {
+      "mount": "EF",
+      "lensAxisHeightEstimated": true
+    }
+  },
+  {
+    "id": "bmd-cinema-camera-6k",
+    "name": "Blackmagic Cinema Camera 6K",
+    "brand": "Blackmagic Design",
+    "category": "camera",
+    "weight": 1240,
+    "dimensions": {
+      "width": 177,
+      "height": 116,
+      "depth": 103
+    },
+    "source": {
+      "kind": "estimated",
+      "note": "Valores aproximados — conferir na ficha da Blackmagic."
+    },
+    "mountingPoints": [
+      {
+        "id": "base",
+        "label": "Rosca 1/4\" inferior",
+        "type": "base",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": -58.0
+        }
+      },
+      {
+        "id": "lens",
+        "label": "Encaixe L",
+        "type": "lens_mount",
+        "position": {
+          "x": 0,
+          "y": 51.5,
+          "z": -3.0
+        }
+      }
+    ],
+    "metadata": {
+      "mount": "L",
+      "lensAxisHeightEstimated": true
+    }
+  },
+  {
+    "id": "red-komodo-6k",
+    "name": "RED Komodo 6K",
+    "brand": "RED",
+    "category": "camera",
+    "weight": 950,
+    "dimensions": {
+      "width": 101.6,
+      "height": 101.6,
+      "depth": 95.3
+    },
+    "source": {
+      "kind": "official",
+      "reference": "red.com — KOMODO 6K especificações",
+      "note": "Corpo apenas (BRAIN). Confira antes do set."
+    },
+    "mountingPoints": [
+      {
+        "id": "base",
+        "label": "Rosca 1/4\" inferior",
+        "type": "base",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": -50.8
+        }
+      },
+      {
+        "id": "lens",
+        "label": "Encaixe RF",
+        "type": "lens_mount",
+        "position": {
+          "x": 0,
+          "y": 47.65,
+          "z": -0.8
+        }
+      }
+    ],
+    "metadata": {
+      "mount": "RF",
+      "lensAxisHeightEstimated": true
+    }
+  }
+]
