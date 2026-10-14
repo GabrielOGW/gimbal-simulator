@@ -25,7 +25,14 @@ export type SimState = {
   customGimbals: Gimbal[];
   settings: SimulationSettings;
   presets: SavedPreset[];
+  /** Histórico de desfazer/refazer (apenas em memória, não é persistido) */
+  past: Setup[];
+  future: Setup[];
+  /** Chave do último passo agrupável (ex.: arrastar o mesmo item) */
+  historyKey: string | null;
 };
+
+export const HISTORY_LIMIT = 50;
 
 export type Action =
   | { type: "hydrate"; state: Partial<SimState> }
@@ -35,6 +42,7 @@ export type Action =
   | { type: "rename"; name: string }
   | { type: "add"; equipment: Equipment }
   | { type: "remove"; instanceId: string }
+  | { type: "remove_selected" }
   | { type: "duplicate"; instanceId: string }
   | { type: "move"; instanceId: string; position?: Vec3; rotation?: EulerDeg }
   | { type: "reset_item"; instanceId: string }
@@ -50,7 +58,12 @@ export type Action =
   | { type: "upsert_custom_gimbal"; gimbal: Gimbal }
   | { type: "settings"; settings: Partial<SimulationSettings> }
   | { type: "save_preset"; name: string }
-  | { type: "delete_preset"; id: string };
+  | { type: "delete_preset"; id: string }
+  | { type: "replace_equipment"; instanceId: string; equipment: Equipment }
+  | { type: "undo" }
+  | { type: "redo" }
+  /** Fim de um gesto contínuo (soltar o mouse/slider): o próximo passo vira uma nova entrada no histórico */
+  | { type: "end_gesture" };
 
 export const equipmentIndex = (catalog: Catalog, custom: readonly Equipment[]) =>
   new Map<string, Equipment>([...catalog.equipment, ...custom].map((e) => [e.id, e]));
@@ -75,10 +88,76 @@ export function initialState(catalog: Catalog): SimState {
     customGimbals: [],
     settings: DEFAULT_SETTINGS,
     presets: [],
+    past: [],
+    future: [],
+    historyKey: null,
   };
 }
 
+/** Ações que alteram o setup e entram no desfazer. Pose e seleção ficam de fora. */
+const UNDOABLE = new Set<Action["type"]>([
+  "load_setup",
+  "load_builtin",
+  "new_setup",
+  "rename",
+  "add",
+  "remove",
+  "remove_selected",
+  "duplicate",
+  "move",
+  "reset_item",
+  "center",
+  "set_gimbal",
+  "set_adjustment",
+  "apply_recommended",
+  "delete_custom_equipment",
+  "upsert_custom_gimbal",
+  "replace_equipment",
+]);
+
+/** Passos consecutivos com a mesma chave viram uma única entrada (um arraste = um desfazer). */
+function groupKey(action: Action): string | null {
+  switch (action.type) {
+    case "move":
+      return `move:${action.instanceId}:${action.position ? "p" : ""}${action.rotation ? "r" : ""}`;
+    case "set_adjustment":
+      return `adj:${action.key}`;
+    case "rename":
+      return "rename";
+    default:
+      return null;
+  }
+}
+
 export function createReducer(catalog: Catalog) {
+  const base = createBaseReducer(catalog);
+  return function reducer(state: SimState, action: Action): SimState {
+    switch (action.type) {
+      case "undo": {
+        const prev = state.past[state.past.length - 1];
+        if (!prev) return state;
+        return { ...state, setup: prev, past: state.past.slice(0, -1), future: [state.setup, ...state.future], historyKey: null, selectedId: keepSelection(state.selectedId, prev) };
+      }
+      case "redo": {
+        const [next, ...rest] = state.future;
+        if (!next) return state;
+        return { ...state, setup: next, past: [...state.past, state.setup], future: rest, historyKey: null, selectedId: keepSelection(state.selectedId, next) };
+      }
+      case "end_gesture":
+      case "select":
+        return { ...base(state, action), historyKey: null };
+    }
+    const next = base(state, action);
+    if (next === state || next.setup === state.setup || !UNDOABLE.has(action.type)) return next;
+    const key = groupKey(action);
+    if (key && key === state.historyKey) return { ...next, historyKey: key };
+    return { ...next, past: [...state.past, state.setup].slice(-HISTORY_LIMIT), future: [], historyKey: key };
+  };
+}
+
+const keepSelection = (id: string | null, setup: Setup) => (id && setup.items.some((i) => i.instanceId === id) ? id : null);
+
+function createBaseReducer(catalog: Catalog) {
   return function reducer(state: SimState, action: Action): SimState {
     const byId = equipmentIndex(catalog, state.customEquipment);
     const gimbals = allGimbals(catalog, state.customGimbals);
@@ -88,7 +167,7 @@ export function createReducer(catalog: Catalog) {
 
     switch (action.type) {
       case "hydrate":
-        return { ...state, ...action.state, selectedId: null };
+        return { ...state, ...action.state, selectedId: null, past: [], future: [], historyKey: null };
 
       case "load_setup": {
         const customEquipment = [...state.customEquipment];
@@ -126,6 +205,9 @@ export function createReducer(catalog: Catalog) {
           { ...state.setup, items: state.setup.items.filter((i) => i.instanceId !== action.instanceId) },
           { selectedId: state.selectedId === action.instanceId ? null : state.selectedId },
         );
+
+      case "remove_selected":
+        return state.selectedId ? reducer(state, { type: "remove", instanceId: state.selectedId }) : state;
 
       case "duplicate": {
         const src = state.setup.items.find((i) => i.instanceId === action.instanceId);
@@ -244,6 +326,20 @@ export function createReducer(catalog: Catalog) {
 
       case "delete_preset":
         return { ...state, presets: state.presets.filter((p) => p.id !== action.id) };
+
+      case "replace_equipment":
+        // Troca o equipamento de um item mantendo posição e rotação (ex.: "cópia editável")
+        return withSetup({
+          ...state.setup,
+          items: state.setup.items.map((i) =>
+            i.instanceId === action.instanceId ? { ...i, equipmentId: action.equipment.id } : i,
+          ),
+        });
+
+      case "undo":
+      case "redo":
+      case "end_gesture":
+        return state;
     }
   };
 }

@@ -23,6 +23,9 @@ const paths = {
   check: "M5 12l5 5L20 7",
   chevron: "M6 9l6 6 6-6",
   new: "M6 3h9l5 5v13H6zM14 3v6h6",
+  undo: "M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3",
+  redo: "M15 14l5-5-5-5M20 9H9a5 5 0 0 0 0 10h3",
+  link: "M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1",
   gimbal: "M12 21v-5M9 21h6M12 16a2 2 0 0 0 2-2V9M6 9h12M6 9v4M18 9v4M9 5h6v4H9z",
 } as const;
 

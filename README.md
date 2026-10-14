@@ -128,11 +128,23 @@ Massa e inércia das partes móveis do gimbal, momento de inércia, torque máxi
 
 ## Testes
 
-`npm test` roda 62 testes unitários: massa total, CM (incluindo o exemplo 1000 g @ 0 + 500 g @ 100 → 33,33 mm), CM personalizado e rotacionado, CM ausente, setup vazio, valores inválidos, payload e margem, balanceamento (sinais, tolerância, fora de curso, convergência), torque por pose, interferência, validação do catálogo, busca, posicionamento automático e import/export.
+`npm test` roda 76 testes unitários: massa total, CM (incluindo o exemplo 1000 g @ 0 + 500 g @ 100 → 33,33 mm), CM personalizado e rotacionado, CM ausente, setup vazio, valores inválidos, payload e margem, balanceamento (sinais, tolerância, fora de curso, convergência), torque por pose, interferência, validação do catálogo, busca, posicionamento automático, import/export, link compartilhado e o reducer da interface (desfazer/refazer).
+
+## Atalhos e compartilhamento
+
+| Ação | Atalho |
+|---|---|
+| Desfazer / refazer | Ctrl+Z / Ctrl+Shift+Z (ou Ctrl+Y) — ⌘ no Mac |
+| Remover item selecionado | Delete / Backspace |
+| Limpar seleção | Esc |
+
+Um arraste ou um movimento de slider conta como **um** passo de desfazer.
+
+**Compartilhar** copia um link com o setup inteiro (inclusive equipamentos e gimbal personalizados) comprimido no fragmento da URL (`#s=…`). O fragmento não é enviado ao servidor, então funciona sem banco e sem conta. Para setups permanentes, use Exportar (JSON).
 
 ## Fases
 
 - **Fase 1 (MVP), feita:** catálogo, gimbals, configurador, peso, CM, payload com margem, cena 3D, equipamentos personalizados, movimentação X/Y/Z (arrastar e numérico), balanceamento.
 - **Fase 2, parcialmente adiantada:** presets (locais + exemplos), import/export JSON, vistas frontal/lateral/superior, recomendações automáticas, gimbal personalizado, pontos de montagem básicos (câmera ↔ lente).
-- **Fase 3:** banco (Neon), contas, setups salvos na nuvem, compartilhamento por link, catálogo colaborativo.
+- **Fase 3:** banco (Neon), contas, setups salvos na nuvem, catálogo colaborativo. (Compartilhamento por link já existe, sem servidor.)
 - **Fase 4:** física mais completa (ver acima).
