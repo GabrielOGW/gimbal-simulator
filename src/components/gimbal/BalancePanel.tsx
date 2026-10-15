@@ -2,6 +2,8 @@ import type { AxisName } from "@/lib/gimbal/types";
 import type { AxisBalance, BalanceResult } from "@/lib/simulation/balance";
 import { formatSignedMm, formatTorque } from "@/lib/format";
 import { Button, StatusPill, type Tone } from "@/components/ui/controls";
+import { useUnits } from "@/components/ui/units";
+import { formatMm } from "@/lib/format";
 import { AXIS_HINT, AXIS_LABEL, correctionText } from "./copy";
 
 const STATUS: Record<AxisBalance["status"], { tone: Tone; label: string }> = {
@@ -14,6 +16,7 @@ const AXIS_COLOR: Record<AxisName, string> = { tilt: "var(--color-ax-x)", roll: 
 
 function AxisCard({ a, tolerance }: { a: AxisBalance; tolerance: number }) {
   const s = STATUS[a.status];
+  const u = useUnits();
   const actionable = a.corrections.filter((c) => Math.abs(c.delta) > tolerance || !c.withinRange);
   return (
     <div className="rounded-md border border-ink-700 bg-ink-850 p-2.5">
@@ -21,7 +24,7 @@ function AxisCard({ a, tolerance }: { a: AxisBalance; tolerance: number }) {
         <div className="flex items-center gap-2">
           <span className="h-3 w-1 rounded-full" style={{ background: AXIS_COLOR[a.axis] }} />
           <span className="text-sm font-semibold">{AXIS_LABEL[a.axis]}</span>
-          <span className="num text-[11px] text-ink-400">desvio {a.residual.toFixed(1)} mm</span>
+          <span className="num text-[11px] text-ink-400">desvio {formatMm(a.residual, 1, u)}</span>
         </div>
         <StatusPill tone={s.tone}>{s.label}</StatusPill>
       </div>
@@ -32,12 +35,12 @@ function AxisCard({ a, tolerance }: { a: AxisBalance; tolerance: number }) {
           {actionable.map((c) => (
             <li key={c.key} className="text-[12px] leading-snug">
               <div className="flex items-baseline justify-between gap-2">
-                <span className="text-ink-100">{correctionText(c.key, c.ideal - c.current)}</span>
-                <span className="num shrink-0 font-semibold text-amber">{formatSignedMm(c.ideal - c.current)}</span>
+                <span className="text-ink-100">{correctionText(c.key, c.ideal - c.current, u)}</span>
+                <span className="num shrink-0 font-semibold text-amber">{formatSignedMm(c.ideal - c.current, 0, u)}</span>
               </div>
               {!c.withinRange && (
                 <div className="mt-0.5 text-[11px] text-stop">
-                  Excede o curso ({c.range.min}…{c.range.max} mm). No limite sobram {formatSignedMm(c.ideal - c.recommended)} —
+                  Excede o curso ({formatMm(c.range.min, 0, u)} a {formatMm(c.range.max, 0, u)}). No limite sobram {formatSignedMm(c.ideal - c.recommended, 0, u)} —
                   considere contrapeso, extensão de placa ou reposicionar acessórios.
                 </div>
               )}
@@ -46,9 +49,9 @@ function AxisCard({ a, tolerance }: { a: AxisBalance; tolerance: number }) {
         </ul>
       )}
       {a.axis === "roll" && a.offset.z !== undefined && Math.abs(a.offset.z) > tolerance && (
-        <p className="mt-1.5 text-[10px] text-ink-400">O desvio vertical ({formatSignedMm(a.offset.z)}) também afeta o roll — é corrigido na altura do tilt.</p>
+        <p className="mt-1.5 text-[10px] text-ink-400">O desvio vertical ({formatSignedMm(a.offset.z, 0, u)}) também afeta o roll — é corrigido na altura do tilt.</p>
       )}
-      <div className="num mt-1.5 text-[10px] text-ink-400">Torque estático máx. estimado: {formatTorque(a.worstCaseTorque)}</div>
+      <div className="num mt-1.5 text-[10px] text-ink-400">Torque estático máx. estimado: {formatTorque(a.worstCaseTorque, u)}</div>
     </div>
   );
 }

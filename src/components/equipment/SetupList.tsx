@@ -2,10 +2,11 @@
 
 import { CATEGORY_CODES, CATEGORY_LABELS } from "@/lib/equipment/categories";
 import type { EquipmentCategory } from "@/lib/equipment/types";
-import { formatMass } from "@/lib/format";
+import { formatMass, formatXYZ } from "@/lib/format";
 import type { ResolvedItem, SetupItem } from "@/lib/setup/types";
 import { IconButton, SourceBadge, cx } from "@/components/ui/controls";
 import { Icon } from "@/components/ui/Icon";
+import { useUnits } from "@/components/ui/units";
 
 /** Slots do "configurador" — sempre visíveis, mesmo vazios. */
 const SLOTS: EquipmentCategory[] = ["camera", "lens", "cage", "monitor", "battery", "follow_focus", "transmitter", "matte_box"];
@@ -29,6 +30,7 @@ export function SetupList({
   onRemove: (id: string) => void;
   onDuplicate: (id: string) => void;
 }) {
+  const u = useUnits();
   const extras = [...new Set(items.map((i) => i.equipment.category))].filter((c) => !SLOTS.includes(c));
   const groups = [...SLOTS, ...extras];
 
@@ -37,7 +39,7 @@ export function SetupList({
       <div className="mb-3 flex items-end justify-between">
         <div>
           <div className="label">Peso total</div>
-          <div className="num text-xl font-semibold">{formatMass(totalMass, { forceKg: true })}</div>
+          <div className="num text-xl font-semibold">{formatMass(totalMass, { forceKg: true }, u)}</div>
         </div>
         <div className="num text-right text-[11px] text-ink-400">{items.length} itens</div>
       </div>
@@ -114,6 +116,7 @@ function ItemRow({
 }) {
   const e = item.equipment;
   const p = item.position;
+  const u = useUnits();
   return (
     <li
       className={cx(
@@ -130,11 +133,11 @@ function ItemRow({
             <span className="truncate text-[13px]">{e.name}</span>
           </span>
           <span className="num block truncate text-[10px] text-ink-400">
-            X{p.x.toFixed(0)} Y{p.y.toFixed(0)} Z{p.z.toFixed(0)} mm
+            {formatXYZ(p, u)}
           </span>
         </span>
         <span className="flex shrink-0 flex-col items-end gap-0.5">
-          <span className="num text-xs">{formatMass(e.weight)}</span>
+          <span className="num text-xs">{formatMass(e.weight, {}, u)}</span>
           <span className="flex gap-1">
             {e.centerOfMass === undefined && (
               <span title="Centro de massa estimado pelo centro geométrico" className="num text-[9px] text-ink-400">

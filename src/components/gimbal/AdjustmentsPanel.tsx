@@ -1,6 +1,9 @@
 import type { AdjustmentKey, Gimbal, GimbalAdjustments } from "@/lib/gimbal/types";
 import type { BalanceResult } from "@/lib/simulation/balance";
+import { formatMm } from "@/lib/format";
+import { fromDisplayLength, lengthDigits, lengthStep, toDisplayLength } from "@/lib/units";
 import { NumberField } from "@/components/ui/controls";
+import { useUnits } from "@/components/ui/units";
 import { ADJ_AXIS, ADJ_LABEL } from "./copy";
 
 const AX_COLOR = { x: "var(--color-ax-x)", y: "var(--color-ax-y)", z: "var(--color-ax-z)" };
@@ -16,6 +19,7 @@ export function AdjustmentsPanel({
   balance: BalanceResult | null;
   onChange: (key: AdjustmentKey, value: number) => void;
 }) {
+  const u = useUnits();
   const ideal: Partial<Record<AdjustmentKey, number>> = {};
   if (balance) {
     for (const a of Object.values(balance.axes)) for (const c of a.corrections) ideal[c.key] = c.ideal;
@@ -32,7 +36,7 @@ export function AdjustmentsPanel({
             <div className="mb-1 flex items-center justify-between">
               <span className="text-[11px] text-ink-200">{ADJ_LABEL[key]}</span>
               <span className="num text-[10px] text-ink-400">
-                {r.min}…{r.max} mm · eixo {ADJ_AXIS[key].toUpperCase()}
+                {formatMm(r.min, 0, u)} a {formatMm(r.max, 0, u)} · eixo {ADJ_AXIS[key].toUpperCase()}
               </span>
             </div>
             <div className="grid grid-cols-[1fr_150px] items-center gap-2">
@@ -51,19 +55,20 @@ export function AdjustmentsPanel({
                   <div
                     className="pointer-events-none absolute -bottom-1 h-1.5 w-1.5 -translate-x-1/2 rotate-45 bg-go"
                     style={{ left: pct(target) }}
-                    title={`Ideal: ${target.toFixed(1)} mm`}
+                    title={`Ideal: ${formatMm(target, 1, u)}`}
                   />
                 )}
               </div>
               <NumberField
                 label={ADJ_AXIS[key].toUpperCase()}
                 accent={AX_COLOR[ADJ_AXIS[key]]}
-                value={v}
-                unit="mm"
-                step={1}
-                min={r.min}
-                max={r.max}
-                onChange={(n) => onChange(key, n)}
+                value={toDisplayLength(v, u)}
+                unit={u.length}
+                step={lengthStep(u)}
+                digits={lengthDigits(u)}
+                min={toDisplayLength(r.min, u)}
+                max={toDisplayLength(r.max, u)}
+                onChange={(n) => onChange(key, fromDisplayLength(n, u))}
                 compact
               />
             </div>

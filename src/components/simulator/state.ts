@@ -14,6 +14,7 @@ import {
 import { suggestPlacement } from "@/lib/setup/placement";
 import { BUILTIN_PRESETS } from "@/lib/setup/presets";
 import { DEFAULT_SETTINGS, type Setup, type SimulationSettings } from "@/lib/setup/types";
+import { isDisplayUnits } from "@/lib/units";
 import type { EulerDeg, Vec3 } from "@/types/geometry";
 
 export type SavedPreset = Setup;
@@ -166,8 +167,12 @@ function createBaseReducer(catalog: Catalog) {
     const withSetup = (setup: Setup, extra: Partial<SimState> = {}): SimState => ({ ...state, ...extra, setup: touch(setup) });
 
     switch (action.type) {
-      case "hydrate":
-        return { ...state, ...action.state, selectedId: null, past: [], future: [], historyKey: null };
+      case "hydrate": {
+        // Estado salvo por versões antigas não tem `units`: completa com o padrão.
+        const saved = action.state.settings;
+        const settings = { ...DEFAULT_SETTINGS, ...saved, units: isDisplayUnits(saved?.units) ? saved.units : DEFAULT_SETTINGS.units };
+        return { ...state, ...action.state, settings, selectedId: null, past: [], future: [], historyKey: null };
+      }
 
       case "load_setup": {
         const customEquipment = [...state.customEquipment];

@@ -1,12 +1,14 @@
 "use client";
 
 import { CATEGORY_LABELS } from "@/lib/equipment/categories";
-import { formatDay, formatMass } from "@/lib/format";
+import { formatDay, formatDims, formatMass, formatVec } from "@/lib/format";
+import { fromDisplayLength, lengthDigits, toDisplayLength } from "@/lib/units";
 import { itemCenterOfMass } from "@/lib/simulation/centerOfMass";
 import type { ResolvedItem } from "@/lib/setup/types";
 import type { EulerDeg, Vec3 } from "@/types/geometry";
 import { Button, NumberField, SourceBadge } from "@/components/ui/controls";
 import { Icon } from "@/components/ui/Icon";
+import { useUnits } from "@/components/ui/units";
 
 const AX = { x: "var(--color-ax-x)", y: "var(--color-ax-y)", z: "var(--color-ax-z)" };
 
@@ -25,6 +27,7 @@ export function ItemInspector({
 }) {
   const e = item.equipment;
   const com = itemCenterOfMass(item);
+  const u = useUnits();
   return (
     <div className="space-y-3">
       <div>
@@ -49,15 +52,11 @@ export function ItemInspector({
 
       <dl className="num grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[11px]">
         <dt className="text-ink-400">Peso</dt>
-        <dd className="text-right">{formatMass(e.weight)}</dd>
+        <dd className="text-right">{formatMass(e.weight, {}, u)}</dd>
         <dt className="text-ink-400">L × A × P</dt>
-        <dd className="text-right">
-          {e.dimensions.width} × {e.dimensions.height} × {e.dimensions.depth} mm
-        </dd>
+        <dd className="text-right">{formatDims(e.dimensions, u)}</dd>
         <dt className="text-ink-400">CM do item</dt>
-        <dd className="text-right">
-          {com.x.toFixed(0)}, {com.y.toFixed(0)}, {com.z.toFixed(0)} mm
-        </dd>
+        <dd className="text-right">{formatVec(com, 0, u)}</dd>
       </dl>
       {e.centerOfMass === undefined ? (
         <p className="flex gap-1.5 text-[11px] leading-snug text-amber">
@@ -67,7 +66,7 @@ export function ItemInspector({
       ) : (
         e.centerOfMassSource && (
           <p className="flex items-center gap-1.5 text-[10px] text-ink-400">
-            CM local ({e.centerOfMass.x}, {e.centerOfMass.y}, {e.centerOfMass.z}) mm <SourceBadge source={e.centerOfMassSource} compact />
+            CM local ({formatVec(e.centerOfMass, 1, u)}) <SourceBadge source={e.centerOfMassSource} compact />
           </p>
         )
       )}
@@ -80,10 +79,11 @@ export function ItemInspector({
               key={k}
               label={k.toUpperCase()}
               accent={AX[k]}
-              unit="mm"
-              step={5}
-              value={item.position[k]}
-              onChange={(v) => onMove({ position: { ...item.position, [k]: v } })}
+              unit={u.length}
+              step={u.length === "in" ? 0.25 : 5}
+              digits={lengthDigits(u)}
+              value={toDisplayLength(item.position[k], u)}
+              onChange={(v) => onMove({ position: { ...item.position, [k]: fromDisplayLength(v, u) } })}
             />
           ))}
         </div>

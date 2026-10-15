@@ -53,7 +53,12 @@ export function IconButton({ icon, label, className, ...rest }: { icon: IconName
   );
 }
 
-/** Campo numérico com unidade explícita e passo rápido. Confirma no blur/Enter. */
+/**
+ * Campo numérico com unidade explícita e passo rápido. Confirma no blur/Enter.
+ * `value` já vem na unidade exibida; `digits` são as casas mostradas. Sair do
+ * campo sem editar não regrava o valor (evita acumular arredondamento ao
+ * converter unidades).
+ */
 export function NumberField({
   label,
   value,
@@ -64,6 +69,7 @@ export function NumberField({
   max,
   accent,
   compact,
+  digits = 1,
 }: {
   label: string;
   value: number;
@@ -74,25 +80,29 @@ export function NumberField({
   max?: number;
   accent?: string;
   compact?: boolean;
+  digits?: number;
 }) {
   const id = useId();
-  const [draft, setDraft] = useState(String(value));
+  const k = 10 ** digits;
+  const shown = String(Math.round(value * k) / k);
+  const [draft, setDraft] = useState(shown);
   const focused = useRef(false);
   useEffect(() => {
-    if (!focused.current) setDraft(String(Math.round(value * 10) / 10));
-  }, [value]);
+    if (!focused.current) setDraft(shown);
+  }, [shown]);
 
   const commit = (raw: string) => {
     const n = Number(raw.replace(",", "."));
     if (raw.trim() === "" || !Number.isFinite(n)) {
-      setDraft(String(value));
+      setDraft(shown);
       return;
     }
+    if (raw.trim() === shown) return;
     const clamped = Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n));
     onChange(clamped);
     setDraft(String(clamped));
   };
-  const bump = (dir: 1 | -1) => commit(String(Math.round((value + dir * step) * 10) / 10));
+  const bump = (dir: 1 | -1) => commit(String(Math.round((value + dir * step) * k) / k));
 
   return (
     <div className="flex items-center gap-1.5">
