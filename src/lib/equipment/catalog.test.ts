@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { BUILTIN_PRESETS } from "@/lib/setup/presets";
 import { getCatalog, RAW_EQUIPMENT, RAW_GIMBALS } from "./catalog";
 import { searchEquipment } from "./search";
-import { validateEquipment } from "./validation";
+import { validateEquipment, validateGimbal } from "./validation";
 
 describe("catálogo inicial", async () => {
   const catalog = await getCatalog();
@@ -33,6 +33,14 @@ describe("catálogo inicial", async () => {
   });
   it("itens genéricos nunca são official", () => {
     for (const e of catalog.equipment) if (e.id.startsWith("generic-")) expect(e.source.kind, e.id).toBe("estimated");
+  });
+  it("massas móveis dos gimbals são estimadas e coerentes com o peso", () => {
+    for (const g of catalog.gimbals) {
+      const mm = g.movingMasses;
+      expect(mm, g.id).toBeDefined();
+      expect(mm!.source.kind, g.id).toBe("estimated");
+      expect(mm!.tilt.mass + mm!.roll.mass + mm!.pan.mass, g.id).toBeLessThan(g.weight!);
+    }
   });
   it("contém as câmeras pedidas", () => {
     for (const id of ["sony-fx3", "sony-fx6", "sony-fx9", "canon-c70", "canon-c300-mk3", "bmd-cinema-camera-6k", "red-komodo-6k"]) {
@@ -87,5 +95,22 @@ describe("validateEquipment", () => {
   });
   it("CM com valor não numérico é erro", () => {
     expect(validateEquipment({ ...valid, centerOfMass: { x: "a", y: 0, z: 0 } }).ok).toBe(false);
+  });
+});
+
+describe("validateGimbal: massas móveis", async () => {
+  const base = (await getCatalog()).gimbals[0]!;
+  it("aceita gimbal sem massas móveis (modelo antigo)", () => {
+    expect(validateGimbal({ ...base, movingMasses: undefined }).ok).toBe(true);
+  });
+  it("rejeita massa negativa ou CM ausente", () => {
+    const mm = base.movingMasses!;
+    expect(validateGimbal({ ...base, movingMasses: { ...mm, pan: { mass: -1, com: mm.pan.com } } }).ok).toBe(false);
+    expect(validateGimbal({ ...base, movingMasses: { ...mm, tilt: { mass: 100 } } }).ok).toBe(false);
+  });
+  it("massas acima do peso do gimbal geram aviso", () => {
+    const r = validateGimbal({ ...base, weight: 100 });
+    expect(r.ok).toBe(true);
+    expect(r.warnings.length).toBe(1);
   });
 });

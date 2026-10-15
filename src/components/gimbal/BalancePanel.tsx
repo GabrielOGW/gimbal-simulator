@@ -57,6 +57,12 @@ export function BalancePanel({ balance, tolerance, onApply }: { balance: Balance
   const allOk = (["tilt", "roll", "pan"] as const).every((k) => balance.axes[k].status === "ok");
   return (
     <div className="space-y-2">
+      {balance.includesGimbalMasses && (
+        <p className="rounded border border-amber/30 bg-amber/5 px-2 py-1.5 text-[10px] leading-snug text-amber">
+          Inclui a massa <b>estimada</b> das partes móveis do gimbal (braços e motores). O fabricante não publica esses valores — o
+          ajuste de pan vem principalmente delas.
+        </p>
+      )}
       {(["tilt", "roll", "pan"] as const).map((k) => (
         <AxisCard key={k} a={balance.axes[k]} tolerance={tolerance} />
       ))}

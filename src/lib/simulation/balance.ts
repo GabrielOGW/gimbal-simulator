@@ -19,8 +19,11 @@ import { add, vec } from "./geometry";
  *  - Pan  (eixo Z): CM com x = 0 e y = −pan → corrigido por `pan` (Y)
  *                   (só gera torque quando o gimbal é inclinado/fora da vertical)
  *
+ * Com `gimbal.movingMasses`, cada eixo equilibra também as partes do gimbal
+ * que giram com ele (ver evaluateBalance).
+ *
  * Limitações conhecidas (exibidas na UI):
- *  - massa e inércia das partes móveis do próprio gimbal (motores, braços) são ignoradas;
+ *  - massas das partes móveis do gimbal são estimadas e tratadas como pontos; inércia é ignorada;
  *  - eixos são considerados perfeitamente ortogonais e concorrentes;
  *  - o resultado depende da precisão de peso, dimensões e CM informados.
  */
@@ -63,6 +66,8 @@ export type BalanceResult = {
   comPivot: Vec3;
   axes: Record<AxisName, AxisBalance>;
   recommendedAdjustments: GimbalAdjustments;
+  /** true quando o cálculo incluiu as massas (estimadas) das partes móveis do gimbal */
+  includesGimbalMasses: boolean;
 };
 
 export const payloadOrigin = (adj: GimbalAdjustments): Vec3 => vec(adj.roll, adj.plate, -adj.height);
@@ -105,9 +110,38 @@ function statusFor(residual: number, tolerance: number, corrections: Correction[
 
 const torque = (massG: number, distMm: number) => (massG / 1000) * GRAVITY * (distMm / 1000);
 
+/** Corpo pontual no referencial do pivô. */
+export type Body = { mass: number; at: Vec3 };
+
+/**
+ * Posição atual (referencial do pivô) de cada conjunto móvel do gimbal,
+ * segundo as regras de `GimbalMovingMasses`. null quando o gimbal não tem massas.
+ */
+export function gimbalBodies(
+  gimbal: Pick<Gimbal, "movingMasses">,
+  adj: GimbalAdjustments,
+): Record<AxisName, Body> | null {
+  const m = gimbal.movingMasses;
+  if (!m) return null;
+  return {
+    tilt: { mass: m.tilt.mass, at: add(m.tilt.com, vec(adj.roll, 0, -adj.height)) },
+    roll: { mass: m.roll.mass, at: add(m.roll.com, vec(adj.roll, 0, 0)) },
+    pan: { mass: m.pan.mass, at: m.pan.com },
+  };
+}
+
+const ZERO_BODY: Body = { mass: 0, at: vec(0, 0, 0) };
+
 /**
  * Avalia o balanceamento a partir do CM da carga (referencial da carga),
  * massa total (g), ajustes atuais e cursos do gimbal.
+ *
+ * Cada eixo equilibra tudo o que gira com ele:
+ *   tilt = carga + conjunto tilt
+ *   roll = carga + conjunto tilt + conjunto roll
+ *   pan  = carga + conjuntos tilt, roll e pan (tudo acima do motor pan)
+ * Sem `movingMasses`, os conjuntos têm massa zero e o resultado é o do
+ * modelo antigo (gimbal sem massa).
  *
  * As recomendações seguem a ordem real de balanceamento: tilt (altura, depois
  * frente/trás) → roll → pan. Cada etapa considera o resultado (limitado ao curso)
@@ -117,57 +151,79 @@ export function evaluateBalance(
   comPayload: Vec3,
   totalMass: number,
   adj: GimbalAdjustments,
-  gimbal: Pick<Gimbal, "adjustmentRanges">,
+  gimbal: Pick<Gimbal, "adjustmentRanges"> & Partial<Pick<Gimbal, "movingMasses">>,
   tolerance: number,
 ): BalanceResult {
   if (!(tolerance >= 0)) throw new RangeError(`Tolerância inválida: ${tolerance}`);
+  if (!(totalMass > 0)) throw new RangeError(`Massa da carga inválida: ${totalMass}`);
   const ranges = gimbal.adjustmentRanges;
+  const M = totalMass;
   const c = toPivotFrame(comPayload, adj);
+  const bodies = gimbalBodies(gimbal, adj);
+  const T = bodies?.tilt ?? ZERO_BODY;
+  const R = bodies?.roll ?? ZERO_BODY;
+  const P = bodies?.pan ?? ZERO_BODY;
+  const tc = gimbal.movingMasses?.tilt.com ?? ZERO_BODY.at;
+  const rc = gimbal.movingMasses?.roll.com ?? ZERO_BODY.at;
 
-  // --- Tilt ---------------------------------------------------------------
-  const height = correction("height", "z", adj.height, comPayload.z, ranges.height);
-  const plate = correction("plate", "y", adj.plate, -comPayload.y, ranges.plate);
-  const tiltResidual = Math.hypot(c.y, c.z);
-  const yAfterTilt = comPayload.y + plate.recommended;
-  const zAfterTilt = comPayload.z - height.recommended;
+  // --- Tilt: carga + conjunto tilt ----------------------------------------
+  // Y: M·(CM.y + placa) + mT·t.y = 0           → placa* = −(CM.y + mT·t.y/M)
+  // Z: M·(CM.z − altura) + mT·(t.z − altura) = 0 → altura* = (M·CM.z + mT·t.z)/(M + mT)
+  const mTilt = M + T.mass;
+  const tiltY = (M * c.y + T.mass * T.at.y) / mTilt;
+  const tiltZ = (M * c.z + T.mass * T.at.z) / mTilt;
+  const height = correction("height", "z", adj.height, (M * comPayload.z + T.mass * tc.z) / mTilt, ranges.height);
+  const plate = correction("plate", "y", adj.plate, -(comPayload.y + (T.mass * tc.y) / M), ranges.plate);
+  const tiltResidual = Math.hypot(tiltY, tiltZ);
+  const yAfterTilt = (M * (comPayload.y + plate.recommended) + T.mass * tc.y) / mTilt;
+  const zAfterTilt = (M * (comPayload.z - height.recommended) + T.mass * (tc.z - height.recommended)) / mTilt;
   const tilt: AxisBalance = {
     axis: "tilt",
     status: statusFor(tiltResidual, tolerance, [height, plate]),
     residual: round(tiltResidual),
-    offset: { y: round(c.y), z: round(c.z) },
+    offset: { y: round(tiltY), z: round(tiltZ) },
     corrections: [height, plate],
-    worstCaseTorque: torque(totalMass, tiltResidual),
+    worstCaseTorque: torque(mTilt, tiltResidual),
     residualAfter: round(Math.hypot(yAfterTilt, zAfterTilt)),
   };
 
-  // --- Roll ---------------------------------------------------------------
-  const rollC = correction("roll", "x", adj.roll, -comPayload.x, ranges.roll);
-  const rollResidual = Math.abs(c.x);
-  const xAfterRoll = comPayload.x + rollC.recommended;
+  // --- Roll: carga + conjuntos tilt e roll ---------------------------------
+  // O ajuste roll desloca os três em X: roll* = −(M·CM.x + mT·t.x + mR·r.x)/(M + mT + mR)
+  const mRoll = mTilt + R.mass;
+  const rollX = (M * c.x + T.mass * T.at.x + R.mass * R.at.x) / mRoll;
+  const rollZ = (M * c.z + T.mass * T.at.z + R.mass * R.at.z) / mRoll;
+  const rollC = correction("roll", "x", adj.roll, -(M * comPayload.x + T.mass * tc.x + R.mass * rc.x) / mRoll, ranges.roll);
+  const rollResidual = Math.abs(rollX);
+  const xAfterRoll = rollX - adj.roll + rollC.recommended;
   const roll: AxisBalance = {
     axis: "roll",
     status: statusFor(rollResidual, tolerance, [rollC]),
     residual: round(rollResidual),
-    offset: { x: round(c.x), z: round(c.z) },
+    offset: { x: round(rollX), z: round(rollZ) },
     corrections: [rollC],
-    worstCaseTorque: torque(totalMass, Math.hypot(c.x, c.z)),
+    worstCaseTorque: torque(mRoll, Math.hypot(rollX, rollZ)),
     residualAfter: round(Math.abs(xAfterRoll)),
   };
 
-  // --- Pan ----------------------------------------------------------------
-  // Distância horizontal do CM ao eixo pan. O ajuste pan só atua em Y;
-  // o desvio em X é herdado do roll.
-  const panY = c.y + adj.pan;
-  const panC = correction("pan", "y", adj.pan, -yAfterTilt, ranges.pan);
-  const panResidual = Math.hypot(c.x, panY);
+  // --- Pan: tudo acima do motor pan ---------------------------------------
+  // Distância horizontal do CM ao eixo pan (em y = −pan). O ajuste pan só atua
+  // em Y; o desvio em X é herdado do roll. Com o tilt balanceado, o que sobra
+  // em Y vem dos conjuntos roll e pan (atrás da carga) — é isso que o pan compensa.
+  const mPan = mRoll + P.mass;
+  const panX = (mRoll * rollX + P.mass * P.at.x) / mPan;
+  const panY = (mTilt * tiltY + R.mass * R.at.y + P.mass * P.at.y) / mPan + adj.pan;
+  const yAfterTiltAll = (mTilt * yAfterTilt + R.mass * R.at.y + P.mass * P.at.y) / mPan;
+  const panC = correction("pan", "y", adj.pan, -yAfterTiltAll, ranges.pan);
+  const panResidual = Math.hypot(panX, panY);
+  const xAfterRollAll = (mRoll * xAfterRoll + P.mass * P.at.x) / mPan;
   const pan: AxisBalance = {
     axis: "pan",
     status: statusFor(panResidual, tolerance, [panC]),
     residual: round(panResidual),
-    offset: { x: round(c.x), y: round(panY) },
+    offset: { x: round(panX), y: round(panY) },
     corrections: [panC],
-    worstCaseTorque: torque(totalMass, panResidual),
-    residualAfter: round(Math.hypot(xAfterRoll, yAfterTilt + panC.recommended)),
+    worstCaseTorque: torque(mPan, panResidual),
+    residualAfter: round(Math.hypot(xAfterRollAll, yAfterTiltAll + panC.recommended)),
   };
 
   return {
@@ -179,5 +235,6 @@ export function evaluateBalance(
       roll: rollC.recommended,
       pan: panC.recommended,
     },
+    includesGimbalMasses: bodies !== null,
   };
 }

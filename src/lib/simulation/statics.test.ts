@@ -27,3 +27,23 @@ describe("torqueAtPose", () => {
     expect(torqueAtPose({ x: 30, y: 30, z: 0 }, 1000, { pan: 45, tilt: 10, roll: 5 }).pan).toBe(0);
   });
 });
+
+describe("torqueAtPose com massas do gimbal", () => {
+  const level = { pan: 0, tilt: 0, roll: 0 };
+  it("conjunto tilt entra no tilt e no roll; conjunto roll só no roll", () => {
+    const t = torqueAtPose({ x: 0, y: 0, z: 0 }, 1000, level, {
+      tilt: { mass: 1000, at: { x: 0, y: 10, z: 0 } },
+      roll: { mass: 1000, at: { x: 10, y: 0, z: 0 } },
+    });
+    expect(Math.abs(t.tilt)).toBeCloseTo(0.0980665, 6);
+    expect(Math.abs(t.roll)).toBeCloseTo(0.0980665, 6);
+  });
+  it("conjunto roll não gera torque no tilt mesmo fora do eixo", () => {
+    const t = torqueAtPose({ x: 0, y: 0, z: 0 }, 1000, level, { roll: { mass: 500, at: { x: 0, y: -80, z: 0 } } });
+    expect(t.tilt).toBe(0);
+  });
+  it("sem massas do gimbal é igual ao cálculo antigo", () => {
+    const pose = { pan: 30, tilt: 20, roll: -10 };
+    expect(torqueAtPose({ x: 5, y: 12, z: -3 }, 1500, pose, null)).toEqual(torqueAtPose({ x: 5, y: 12, z: -3 }, 1500, pose));
+  });
+});
