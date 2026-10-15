@@ -101,24 +101,40 @@ capacidade efetiva = máximo × (1 − margem)
 
 Status: `empty` → `over_capacity` (> máximo) → `above_margin` (> efetiva: "dentro da nominal, porém acima da margem") → `below_minimum` → `ok`. A margem é configurável (padrão 10%).
 
-### 3. Balanceamento (gimbal de 3 eixos idealizado)
+### 3. Balanceamento (gimbal de 3 eixos)
 
 Referencial do gimbal: origem no **pivô**, o cruzamento dos eixos tilt (∥X) e roll (∥Y). O eixo pan é vertical, em `y = −pan`.
-A carga é montada em `(roll, plate, −height)`, que são os quatro ajustes mecânicos. CM no referencial do gimbal: `c = CM + (roll, plate, −height)`.
+A carga é montada em `(roll, plate, −height)`, que são os quatro ajustes mecânicos. CM da carga no referencial do gimbal: `c = CM + (roll, plate, −height)`.
 
-| Eixo | Balanceado quando | Ajuste que corrige | Recomendação |
+#### Massas móveis do gimbal (`movingMasses`)
+
+Cada eixo equilibra **tudo o que gira com ele**. As partes do gimbal entram como três pontos de massa, cada um no referencial em que gira:
+
+| Conjunto | O que é | Gira no | Posição no pivô | Por quê |
+|---|---|---|---|---|
+| tilt (`mT`, `t`) | morsa + braço em L | tilt (com a carga) | `t + (roll, 0, −height)` | o braço em L sobe/desce com a altura e desliza com o roll. **Não** anda com a placa: a placa de engate rápido é item do catálogo e já está na carga |
+| roll (`mR`, `r`) | motor tilt + braço horizontal | roll | `r + (roll, 0, 0)` | o braço horizontal desliza no motor roll levando o motor tilt |
+| pan (`mP`, `p`) | motor roll + braço vertical | pan | `p` (fixo) | o ajuste pan move o eixo pan (`y = −pan`), não o conjunto |
+
+O motor pan e o punho não giram em nenhum desses eixos e ficam de fora. Sem `movingMasses`, as três massas são zero e o resultado é **idêntico** ao do modelo sem massa. No catálogo, todas as massas são `estimated`: nenhum fabricante as publica. A nota de cada gimbal explica a origem (fração do peso do estabilizador, posições derivadas da geometria estimada).
+
+#### Equações (M = massa da carga, CM no referencial da carga)
+
+| Eixo | O que gira | Balanceado quando | Recomendação |
 |---|---|---|---|
-| Tilt | `c.y = 0` e `c.z = 0` | placa (Y) e altura (Z) | `plate* = −CM.y`, `height* = CM.z` |
-| Roll | `c.x = 0` | braço horizontal (X) | `roll* = −CM.x` |
-| Pan | CM sobre o eixo vertical | braço vertical (Y) | `pan* = −(CM.y + plate*)` |
+| Tilt | carga + tilt | `M·c + mT·T` com y = 0 e z = 0 | `plate* = −(CM.y + mT·t.y/M)`, `height* = (M·CM.z + mT·t.z)/(M + mT)` |
+| Roll | carga + tilt + roll | x do CM combinado = 0 | `roll* = −(M·CM.x + mT·t.x + mR·r.x)/(M + mT + mR)` |
+| Pan | carga + tilt + roll + pan | CM combinado sobre o eixo vertical | `pan* = −Y`, com Y = y do CM combinado depois do tilt recomendado |
 
-As recomendações seguem a **ordem real de balanceamento** (tilt → roll → pan), cada etapa limitada ao curso mecânico do gimbal. Se o ideal estiver fora do curso, o eixo fica `out_of_range` e a UI diz quanto sobra, sugerindo contrapeso, extensão ou reposicionamento.
-Status por eixo: desvio ≤ tolerância (padrão 2 mm) → `ok`; senão `adjust` ou `out_of_range`.
+Com o tilt balanceado, a carga e o conjunto tilt somam y = 0. O que sobra em Y vem dos conjuntos roll e pan, que ficam **atrás** da carga, e é isso que o pan compensa: `pan* = −(mR·r.y + mP·p.y)/(M + mT + mR + mP)`, positivo (o conjunto avança). Sem massas, o pan só pede ajuste quando o tilt não alcança o ideal por falta de curso.
+
+As recomendações seguem a **ordem real de balanceamento** (tilt → roll → pan). Cada etapa é limitada ao curso mecânico do gimbal e usa o resultado da anterior. Como cada recomendação é fechada (não depende do ajuste atual), aplicar uma vez basta quando tudo cabe no curso; aplicar de novo não muda nada. Se o ideal estiver fora do curso, o eixo fica `out_of_range` e a UI mostra quanto falta, sugerindo contrapeso, extensão ou reposicionamento.
+Status por eixo: desvio ≤ tolerância (padrão 2 mm) → `ok`; senão `adjust` ou `out_of_range`. O desvio e o torque de pior caso usam o CM e a massa **do conjunto que gira** naquele eixo.
 
 ### 4. Torque estático
 
 - **Pior caso:** `τ = M · g · d`, com `d` = desvio até o eixo.
-- **Por pose:** com o gimbal girado (pan → roll → tilt), `τ = r × F` projetado em cada eixo, com `F = (0, 0, −M·g)`. Com a base na vertical, o torque no pan é sempre zero, e o modelo mostra isso.
+- **Por pose:** com o gimbal girado (pan → roll → tilt), `τ = r × F` projetado em cada eixo, com `F = (0, 0, −m·g)` para cada corpo. A carga e o conjunto tilt entram no tilt e no roll; o conjunto roll entra só no roll (não gira no tilt). Com a base na vertical, o torque no pan é sempre zero, e o modelo mostra isso.
 
 ### 5. Interferência (estimada)
 
@@ -128,7 +144,7 @@ Caixa envolvente da carga contra o braço do tilt (lado esquerdo, −X) e o moto
 
 1. **"Posição" de um item era ambígua.** Centro geométrico? Ponto de montagem? CM? Definido: `position` = centro geométrico; CM é um deslocamento local que gira com o item. Sem isso, rotacionar uma lente moveria o CM de forma errada.
 2. **Mapeamento eixo ↔ desvio estava incompleto.** O tilt depende de **dois** desvios (Y *e* Z), não de um. O desvio vertical é o erro mais comum na prática (câmera "top heavy"). O roll também sofre com Z, mas Z só é corrigível pela altura do tilt; a UI explica esse acoplamento.
-3. **Pan não é "deslocamento longitudinal" isolado.** Com eixos ortogonais e gimbal sem massa, balancear o tilt já põe o CM sobre o eixo pan. O ajuste de pan só é necessário (a) quando o tilt não consegue chegar ao ideal por falta de curso, ou (b) por causa da massa das partes do próprio gimbal, que o modelo ignora. O sistema diz isso em vez de inventar um número.
+3. **Pan não é "deslocamento longitudinal" isolado.** Com eixos ortogonais e gimbal sem massa, balancear o tilt já põe o CM sobre o eixo pan. O ajuste de pan só é necessário (a) quando o tilt não consegue chegar ao ideal por falta de curso, ou (b) por causa da massa das partes do próprio gimbal (motor roll e braços, atrás da carga). O modelo cobre (b) com `movingMasses` estimadas e diz na UI que elas são estimadas.
 4. **Os ajustes interagem.** Mover a placa muda tilt *e* pan; por isso as recomendações são sequenciais, e não independentes.
 5. **Pan não sofre torque gravitacional com a base vertical.** Ele só importa com o gimbal inclinado (modo lanterna, briefcase). Mostrar um torque de pan no modo vertical seria precisão falsa.
 6. **Capacidade nominal ≠ capacidade utilizável.** A carga máxima dos fabricantes costuma ser "testada" com setup balanceado e sem acessórios pendurados. Daí a margem configurável.
@@ -137,11 +153,11 @@ Caixa envolvente da carga contra o braço do tilt (lado esquerdo, −X) e o moto
 
 ### Fora do escopo (fase 4)
 
-Massa e inércia das partes móveis do gimbal, momento de inércia, torque máximo dos motores, aceleração e comportamento dinâmico, deflexão de braços e placas, varredura completa de colisão durante a rotação.
+Inércia das partes móveis do gimbal (as massas já entram como pontos), momento de inércia, torque máximo dos motores, aceleração e comportamento dinâmico, deflexão de braços e placas, varredura completa de colisão durante a rotação.
 
 ## Testes
 
-`npm test` roda 76 testes unitários: massa total, CM (incluindo o exemplo 1000 g @ 0 + 500 g @ 100 → 33,33 mm), CM personalizado e rotacionado, CM ausente, setup vazio, valores inválidos, payload e margem, balanceamento (sinais, tolerância, fora de curso, convergência), torque por pose, interferência, validação do catálogo, busca, posicionamento automático, import/export, link compartilhado e o reducer da interface (desfazer/refazer).
+`npm test` roda os testes unitários: massa total, CM (incluindo o exemplo 1000 g @ 0 + 500 g @ 100 → 33,33 mm), CM personalizado e rotacionado, CM ausente, setup vazio, valores inválidos, payload e margem, balanceamento (sinais, tolerância, fora de curso, convergência, massas móveis do gimbal), torque por pose, interferência, validação do catálogo, busca, posicionamento automático, import/export, link compartilhado e o reducer da interface (desfazer/refazer).
 
 ## Atalhos e compartilhamento
 

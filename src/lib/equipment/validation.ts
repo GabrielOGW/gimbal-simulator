@@ -75,6 +75,16 @@ export function validateGimbal(input: unknown): ValidationResult<Gimbal> {
   const axes = input.axes;
   if (!isObj(axes) || !["pan", "tilt", "roll"].every((k) => isObj(axes[k]))) errors.push("Eixos inválidos");
   if (!isSource(input.payloadSource) || !isSource(input.geometrySource)) errors.push("Fonte dos dados inválida");
+  const mm = input.movingMasses;
+  if (mm !== undefined) {
+    const set = (v: unknown) => isObj(v) && isNum(v.mass) && (v.mass as number) >= 0 && isVec(v.com);
+    if (!isObj(mm) || !set(mm.tilt) || !set(mm.roll) || !set(mm.pan) || !isSource(mm.source)) {
+      errors.push("Massas móveis inválidas: tilt, roll e pan precisam de massa ≥ 0 (g), CM (mm) e fonte");
+    } else if (isPos(input.weight)) {
+      const sum = (["tilt", "roll", "pan"] as const).reduce((a, k) => a + ((mm[k] as { mass: number }).mass), 0);
+      if (sum > (input.weight as number)) warnings.push("Massas móveis somam mais que o peso do gimbal — confira os valores");
+    }
+  }
   if (errors.length) return { ok: false, errors, warnings };
   return { ok: true, value: input as unknown as Gimbal, warnings };
 }

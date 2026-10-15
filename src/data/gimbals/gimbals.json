@@ -58,7 +58,37 @@
       "kind": "estimated",
       "note": "Geometria simplificada para visualização e checagem de interferência."
     },
-    "mountingSystem": "Manfrotto/Arca (DJI)"
+    "mountingSystem": "Manfrotto/Arca (DJI)",
+    "movingMasses": {
+      "tilt": {
+        "mass": 225,
+        "com": {
+          "x": -67,
+          "y": 0,
+          "z": 15
+        }
+      },
+      "roll": {
+        "mass": 250,
+        "com": {
+          "x": -95,
+          "y": -43,
+          "z": 0
+        }
+      },
+      "pan": {
+        "mass": 310,
+        "com": {
+          "x": 0,
+          "y": -115,
+          "z": -55
+        }
+      },
+      "source": {
+        "kind": "estimated",
+        "note": "Estimativa, não publicada pelo fabricante. Base: estabilizador 1242 g (ficha DJI). Divisão assumida: 18% / 20% / 25% (tilt / roll / pan); o resto é motor pan e base, que não giram. Posições derivadas da geometria estimada do gimbal."
+      }
+    }
   },
   {
     "id": "dji-rs4",
@@ -119,7 +149,37 @@
       "kind": "estimated",
       "note": "Geometria simplificada para visualização e checagem de interferência."
     },
-    "mountingSystem": "Manfrotto/Arca (DJI)"
+    "mountingSystem": "Manfrotto/Arca (DJI)",
+    "movingMasses": {
+      "tilt": {
+        "mass": 190,
+        "com": {
+          "x": -60,
+          "y": 0,
+          "z": 15
+        }
+      },
+      "roll": {
+        "mass": 215,
+        "com": {
+          "x": -85,
+          "y": -38,
+          "z": 0
+        }
+      },
+      "pan": {
+        "mass": 265,
+        "com": {
+          "x": 0,
+          "y": -105,
+          "z": -45
+        }
+      },
+      "source": {
+        "kind": "estimated",
+        "note": "Estimativa, não publicada pelo fabricante. Base: estabilizador 1066 g (ficha DJI). Divisão assumida: 18% / 20% / 25% (tilt / roll / pan); o resto é motor pan e base, que não giram. Posições derivadas da geometria estimada do gimbal."
+      }
+    }
   },
   {
     "id": "dji-rs4-mini",
@@ -180,7 +240,37 @@
       "kind": "estimated",
       "note": "Geometria simplificada para visualização e checagem de interferência."
     },
-    "mountingSystem": "Arca (DJI)"
+    "mountingSystem": "Arca (DJI)",
+    "movingMasses": {
+      "tilt": {
+        "mass": 160,
+        "com": {
+          "x": -51,
+          "y": 0,
+          "z": 15
+        }
+      },
+      "roll": {
+        "mass": 180,
+        "com": {
+          "x": -72,
+          "y": -31,
+          "z": 0
+        }
+      },
+      "pan": {
+        "mass": 225,
+        "com": {
+          "x": 0,
+          "y": -90,
+          "z": -35
+        }
+      },
+      "source": {
+        "kind": "estimated",
+        "note": "Estimativa, não publicada pelo fabricante. Base: 890 g com a base de engate (ficha DJI). Divisão assumida: 18% / 20% / 25% (tilt / roll / pan); o resto é motor pan e base, que não giram. Posições derivadas da geometria estimada do gimbal."
+      }
+    }
   },
   {
     "id": "dji-rs3-pro",
@@ -240,7 +330,37 @@
       "kind": "estimated",
       "note": "Geometria simplificada para visualização e checagem de interferência."
     },
-    "mountingSystem": "Manfrotto/Arca (DJI)"
+    "mountingSystem": "Manfrotto/Arca (DJI)",
+    "movingMasses": {
+      "tilt": {
+        "mass": 205,
+        "com": {
+          "x": -66,
+          "y": 0,
+          "z": 15
+        }
+      },
+      "roll": {
+        "mass": 230,
+        "com": {
+          "x": -93,
+          "y": -41,
+          "z": 0
+        }
+      },
+      "pan": {
+        "mass": 285,
+        "com": {
+          "x": 0,
+          "y": -112,
+          "z": -52
+        }
+      },
+      "source": {
+        "kind": "estimated",
+        "note": "Estimativa, não publicada pelo fabricante. Base: estabilizador 1143 g (revenda). Divisão assumida: 18% / 20% / 25% (tilt / roll / pan); o resto é motor pan e base, que não giram. Posições derivadas da geometria estimada do gimbal."
+      }
+    }
   },
   {
     "id": "dji-ronin-2",
@@ -301,7 +421,37 @@
       "kind": "estimated",
       "note": "Geometria simplificada para visualização e checagem de interferência."
     },
-    "mountingSystem": "Dovetail Ronin 2"
+    "mountingSystem": "Dovetail Ronin 2",
+    "movingMasses": {
+      "tilt": {
+        "mass": 600,
+        "com": {
+          "x": -114,
+          "y": 0,
+          "z": 15
+        }
+      },
+      "roll": {
+        "mass": 750,
+        "com": {
+          "x": -161,
+          "y": -72,
+          "z": 0
+        }
+      },
+      "pan": {
+        "mass": 1000,
+        "com": {
+          "x": 0,
+          "y": -180,
+          "z": -110
+        }
+      },
+      "source": {
+        "kind": "estimated",
+        "note": "Estimativa, não publicada pelo fabricante. Base: 5,0 kg sem a barra de empunhadura (ficha DJI). Divisão assumida: 12% / 15% / 20% (tilt / roll / pan); o resto é motor pan e base, que não giram. Posições derivadas da geometria estimada do gimbal."
+      }
+    }
   },
   {
     "id": "zhiyun-crane-4",
@@ -362,7 +512,37 @@
       "kind": "estimated",
       "note": "Geometria simplificada para visualização e checagem de interferência."
     },
-    "mountingSystem": "Arca/Manfrotto"
+    "mountingSystem": "Arca/Manfrotto",
+    "movingMasses": {
+      "tilt": {
+        "mass": 225,
+        "com": {
+          "x": -72,
+          "y": 0,
+          "z": 15
+        }
+      },
+      "roll": {
+        "mass": 250,
+        "com": {
+          "x": -102,
+          "y": -45,
+          "z": 0
+        }
+      },
+      "pan": {
+        "mass": 315,
+        "com": {
+          "x": 0,
+          "y": -120,
+          "z": -60
+        }
+      },
+      "source": {
+        "kind": "estimated",
+        "note": "Estimativa, não publicada pelo fabricante. Base: ~1250 g: 1673 g líquidos (ficha Zhiyun) menos ~420 g de empunhadura com baterias. Divisão assumida: 18% / 20% / 25% (tilt / roll / pan); o resto é motor pan e base, que não giram. Posições derivadas da geometria estimada do gimbal."
+      }
+    }
   },
   {
     "id": "zhiyun-weebill-3s",
@@ -423,6 +603,36 @@
       "kind": "estimated",
       "note": "Geometria simplificada para visualização e checagem de interferência."
     },
-    "mountingSystem": "Arca"
+    "mountingSystem": "Arca",
+    "movingMasses": {
+      "tilt": {
+        "mass": 145,
+        "com": {
+          "x": -57,
+          "y": 0,
+          "z": 15
+        }
+      },
+      "roll": {
+        "mass": 160,
+        "com": {
+          "x": -81,
+          "y": -34,
+          "z": 0
+        }
+      },
+      "pan": {
+        "mass": 200,
+        "com": {
+          "x": 0,
+          "y": -95,
+          "z": -40
+        }
+      },
+      "source": {
+        "kind": "estimated",
+        "note": "Estimativa, não publicada pelo fabricante. Base: ~800 g: 1055 g líquidos (ficha Zhiyun) menos ~250 g de empunhadura com baterias. Divisão assumida: 18% / 20% / 25% (tilt / roll / pan); o resto é motor pan e base, que não giram. Posições derivadas da geometria estimada do gimbal."
+      }
+    }
   }
 ]

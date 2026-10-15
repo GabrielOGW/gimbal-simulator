@@ -1,7 +1,7 @@
 import type { Gimbal, GimbalAdjustments } from "@/lib/gimbal/types";
 import type { GimbalPose, ResolvedItem, SimulationSettings } from "@/lib/setup/types";
 import type { Vec3 } from "@/types/geometry";
-import { evaluateBalance, toPivotFrame, type BalanceResult } from "./balance";
+import { evaluateBalance, gimbalBodies, toPivotFrame, type BalanceResult } from "./balance";
 import { calculateCenterOfMass, calculateTotalMass, itemUsesGeometricCenter, toMassPoints } from "./centerOfMass";
 import { checkClearance, type ClearanceIssue } from "./clearance";
 import { rotatedBoxBounds, unionBounds, type Bounds } from "./geometry";
@@ -46,7 +46,9 @@ export function analyzeSetup(
       ? evaluateBalance(centerOfMass, totalMass, adjustments, gimbal, settings.balanceTolerance)
       : null;
   const poseTorque =
-    gimbal && centerOfMass ? torqueAtPose(toPivotFrame(centerOfMass, adjustments), totalMass, pose) : null;
+    gimbal && centerOfMass
+      ? torqueAtPose(toPivotFrame(centerOfMass, adjustments), totalMass, pose, gimbalBodies(gimbal, adjustments))
+      : null;
 
   return {
     totalMass,

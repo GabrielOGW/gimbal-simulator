@@ -1,5 +1,5 @@
 import type { DataSource } from "@/lib/equipment/types";
-import type { Range } from "@/types/geometry";
+import type { Range, Vec3 } from "@/types/geometry";
 
 /**
  * Ajustes mecânicos de balanceamento, em mm. Modelo de gimbal de 3 eixos
@@ -20,6 +20,30 @@ export type AxisName = "pan" | "tilt" | "roll";
 export type AxisConfig = {
   /** Limite mecânico de rotação em graus; null = rotação contínua (360°). */
   rotationLimitDeg: Range | null;
+};
+
+/** Massa (g) e centro de massa (mm) de um conjunto móvel do gimbal. */
+export type MovingMass = { mass: number; com: Vec3 };
+
+/**
+ * Partes móveis do gimbal, agrupadas pelo eixo em que giram. Cada `com` está
+ * no referencial do pivô (com os ajustes em zero) e acompanha os ajustes que
+ * movem aquele conjunto:
+ *
+ * - tilt: morsa + braço em L. Gira no eixo tilt com a carga. É relativo ao
+ *   ponto de montagem da carga sem a placa, (roll, 0, −height): anda com o roll
+ *   e com a altura, mas não com a placa — a placa de engate rápido é item do
+ *   catálogo e já entra na carga.
+ * - roll: motor tilt + braço horizontal. Gira no eixo roll. Relativo a
+ *   (roll, 0, 0): o braço desliza no motor roll levando o motor tilt junto.
+ * - pan: motor roll + braço vertical. Gira no eixo pan. Fixo no referencial do
+ *   pivô (o ajuste pan move o eixo pan, não o conjunto).
+ */
+export type GimbalMovingMasses = {
+  tilt: MovingMass;
+  roll: MovingMass;
+  pan: MovingMass;
+  source: DataSource;
 };
 
 export type Gimbal = {
@@ -47,6 +71,8 @@ export type Gimbal = {
     plateLength: number;
   };
   geometrySource: DataSource;
+  /** Massas das partes móveis. Ausente = gimbal sem massa (modelo antigo). */
+  movingMasses?: GimbalMovingMasses;
   mountingSystem?: string;
   dimensions?: { width: number; height: number; depth: number };
   custom?: boolean;

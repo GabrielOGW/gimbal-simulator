@@ -304,7 +304,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
         <Icon name="info" size={14} /> Estimativa geométrica
       </p>
       Resultados calculados a partir de peso, dimensões e centro de massa informados — não são certificação de compatibilidade nem simulação
-      física completa. Massa dos braços/motores do gimbal e efeitos dinâmicos não são considerados. Sempre faça o balanceamento real no
+      física completa. A massa dos braços/motores do gimbal entra como estimativa; inércia e efeitos dinâmicos não são considerados. Sempre faça o balanceamento real no
       equipamento.
       {analysis && (analysis.estimatedComCount > 0 || analysis.nonOfficialCount > 0) && (
         <span className="mt-1.5 block text-amber">
@@ -509,7 +509,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
         )}
       </Modal>
       <Modal open={modal?.kind === "about"} onClose={() => setModal(null)} title="Como o cálculo funciona" wide>
-        <AboutModel />
+        <AboutModel gimbalMasses={!!gimbal?.movingMasses} />
       </Modal>
 
       {toast && (
@@ -549,7 +549,7 @@ function HeaderBtn({ icon, label, onClick }: { icon: "folder" | "upload" | "down
   );
 }
 
-function AboutModel() {
+function AboutModel({ gimbalMasses }: { gimbalMasses: boolean }) {
   return (
     <div className="space-y-3 text-[13px] leading-relaxed text-ink-200">
       <p>
@@ -567,11 +567,21 @@ function AboutModel() {
         respeitando o curso de cada ajuste.
       </p>
       <p>
+        <b>Massa do gimbal:</b> cada eixo equilibra também as partes do gimbal que giram com ele. O tilt leva a morsa e o braço em L; o roll
+        soma o motor tilt e o braço horizontal; o pan soma ainda o motor roll e o braço vertical, que ficam atrás da carga. Por isso o pan
+        pede ajuste mesmo com o tilt balanceado.{" "}
+        <span className="text-amber">
+          {gimbalMasses
+            ? "Essas massas são estimadas: os fabricantes não as publicam."
+            : "Este gimbal não tem massas cadastradas: o cálculo o trata como sem massa."}
+        </span>
+      </p>
+      <p>
         <b>Torque:</b> m·g·d com o desvio atual — o pior caso estático. Na seção “Simular pose” calculamos o torque da gravidade com o
         gimbal girado, ignorando aceleração.
       </p>
       <p className="text-amber">
-        <b>Limitações:</b> a massa e a inércia das partes móveis do gimbal são ignoradas; a geometria do gimbal e cursos de ajuste são
+        <b>Limitações:</b> a massa das partes móveis do gimbal é estimada e tratada como pontos, e a inércia é ignorada; a geometria do gimbal e cursos de ajuste são
         estimados; dados de catálogo podem conter erros. Use como planejamento, não como garantia.
       </p>
     </div>
