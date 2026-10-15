@@ -304,7 +304,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
         <Icon name="info" size={14} /> Estimativa geométrica
       </p>
       Resultados calculados a partir de peso, dimensões e centro de massa informados — não são certificação de compatibilidade nem simulação
-      física completa. Massa dos braços/motores do gimbal e efeitos dinâmicos não são considerados. Sempre faça o balanceamento real no
+      física completa. A massa dos braços/motores do gimbal entra como estimativa; inércia e efeitos dinâmicos não são considerados. Sempre faça o balanceamento real no
       equipamento.
       {analysis && (analysis.estimatedComCount > 0 || analysis.nonOfficialCount > 0) && (
         <span className="mt-1.5 block text-amber">
