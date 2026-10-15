@@ -96,7 +96,7 @@ export function Viewport(props: Props) {
               setView(v.id);
               setNonce((n) => n + 1);
             }}
-            className={cx("h-7 px-2 text-[11px] font-medium", view === v.id ? "bg-amber text-ink-950" : "text-ink-300 hover:text-ink-100")}
+            className={cx("h-7 px-2 text-[11px] font-medium pointer-coarse:h-9 pointer-coarse:px-2.5", view === v.id ? "bg-amber text-ink-950" : "text-ink-300 hover:text-ink-100")}
           >
             {v.label}
           </button>
@@ -113,7 +113,7 @@ export function Viewport(props: Props) {
       </div>
 
       {/* Legenda dos eixos */}
-      <div className="num pointer-events-none absolute bottom-5 right-5 hidden space-y-0.5 text-right text-[10px] leading-tight text-ink-300 sm:block">
+      <div className="num pointer-events-none absolute bottom-5 right-5 hidden space-y-0.5 text-right text-[10px] leading-tight text-ink-300 sm:block phone-landscape:hidden">
         <div>
           <b className="text-ax-x">X</b> esquerda − / + direita
         </div>
@@ -126,7 +126,7 @@ export function Viewport(props: Props) {
       </div>
 
       {!props.selectedId && props.items.length > 0 && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-14 text-center text-[11px] text-ink-400">
+        <div className="pointer-events-none absolute inset-x-0 bottom-14 text-center text-[11px] text-ink-400 pointer-coarse:bottom-16 phone-landscape:hidden">
           Toque em um equipamento para movê-lo
         </div>
       )}
@@ -144,12 +144,12 @@ function ToolBtn({ active, onClick, icon, label, disabled }: { active: boolean; 
       disabled={disabled}
       onClick={onClick}
       className={cx(
-        "flex h-7 items-center gap-1 rounded px-1.5 text-[11px] disabled:opacity-30",
+        "flex h-7 items-center gap-1 rounded px-1.5 text-[11px] disabled:opacity-30 pointer-coarse:h-9 pointer-coarse:px-2.5",
         active ? "bg-ink-700 text-amber" : "text-ink-300 hover:text-ink-100",
       )}
     >
       <Icon name={icon} size={14} />
-      <span className="hidden md:inline">{label}</span>
+      <span className="hidden whitespace-nowrap md:inline phone-landscape:hidden">{label}</span>
     </button>
   );
 }

@@ -21,7 +21,7 @@ export function Button({ variant = "outline", size = "md", icon, className, chil
       type="button"
       className={cx(
         "inline-flex items-center justify-center gap-1.5 rounded-md font-medium transition-colors disabled:opacity-40 disabled:pointer-events-none select-none",
-        size === "sm" ? "h-7 px-2 text-xs" : "h-9 px-3 text-sm",
+        size === "sm" ? "h-7 px-2 text-xs pointer-coarse:h-9 pointer-coarse:px-2.5" : "h-9 px-3 text-sm pointer-coarse:h-11",
         variant === "primary" && "bg-amber text-ink-950 hover:bg-[#ffc24d]",
         variant === "outline" && "border border-ink-600 text-ink-100 hover:border-ink-400 hover:bg-ink-800",
         variant === "ghost" && "text-ink-200 hover:bg-ink-800 hover:text-ink-100",
@@ -43,7 +43,7 @@ export function IconButton({ icon, label, className, ...rest }: { icon: IconName
       aria-label={label}
       title={label}
       className={cx(
-        "inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-300 transition-colors hover:bg-ink-700 hover:text-ink-100 disabled:opacity-30",
+        "inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-300 transition-colors hover:bg-ink-700 hover:text-ink-100 disabled:opacity-30 pointer-coarse:h-10 pointer-coarse:w-10",
         className,
       )}
       {...rest}
@@ -110,13 +110,13 @@ export function NumberField({
         {label}
       </label>
       <div className="flex min-w-0 flex-1 items-center rounded-md border border-ink-600 bg-ink-950 focus-within:border-amber">
-        <button type="button" aria-label={`Diminuir ${label}`} onClick={() => bump(-1)} className="h-8 w-7 shrink-0 text-ink-300 hover:text-ink-100">
+        <button type="button" aria-label={`Diminuir ${label}`} onClick={() => bump(-1)} className="h-8 w-7 shrink-0 text-ink-300 hover:text-ink-100 pointer-coarse:h-10 pointer-coarse:w-10">
           −
         </button>
         <input
           id={id}
           inputMode="decimal"
-          className={cx("num min-w-0 flex-1 bg-transparent text-center text-sm outline-none", compact ? "h-7" : "h-8")}
+          className={cx("num min-w-0 flex-1 bg-transparent text-center text-sm outline-none", compact ? "h-7" : "h-8", "pointer-coarse:h-10")}
           value={draft}
           onFocus={(e) => {
             focused.current = true;
@@ -140,7 +140,7 @@ export function NumberField({
           }}
         />
         <span className="num pr-1 text-[10px] text-ink-400">{unit}</span>
-        <button type="button" aria-label={`Aumentar ${label}`} onClick={() => bump(1)} className="h-8 w-7 shrink-0 text-ink-300 hover:text-ink-100">
+        <button type="button" aria-label={`Aumentar ${label}`} onClick={() => bump(1)} className="h-8 w-7 shrink-0 text-ink-300 hover:text-ink-100 pointer-coarse:h-10 pointer-coarse:w-10">
           +
         </button>
       </div>
@@ -197,13 +197,16 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center sm:p-4" onMouseDown={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 pt-[var(--sa-top)] pl-[var(--sa-left)] pr-[var(--sa-right)] backdrop-blur-sm sm:items-center sm:p-4 sm:pl-[max(1rem,var(--sa-left))] sm:pr-[max(1rem,var(--sa-right))]"
+      onMouseDown={onClose}
+    >
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
         className={cx(
-          "panel flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-b-none shadow-2xl sm:rounded-b-[10px]",
+          "panel flex max-h-[calc(100dvh-var(--sa-top)-0.5rem)] w-full flex-col overflow-hidden rounded-b-none shadow-2xl sm:max-h-[92dvh] sm:rounded-b-[10px]",
           wide ? "sm:max-w-2xl" : "sm:max-w-md",
         )}
         onMouseDown={(e) => e.stopPropagation()}
@@ -212,7 +215,8 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
           <h2 className="label !text-ink-100">{title}</h2>
           <IconButton icon="x" label="Fechar" onClick={onClose} />
         </div>
-        <div className="scrollbar-thin overflow-y-auto p-4">{children}</div>
+        {/* Embaixo, a folha encosta no home indicator: o conteúdo para antes dele */}
+        <div className="scrollbar-thin overflow-y-auto overscroll-contain p-4 pb-[calc(1rem+var(--sa-bottom))] sm:pb-4">{children}</div>
       </div>
     </div>
   );
@@ -261,7 +265,7 @@ export function TextField({
           id={id}
           type={type}
           inputMode={type === "number" ? "decimal" : undefined}
-          className={cx("h-9 min-w-0 flex-1 bg-transparent px-2.5 text-sm outline-none", type === "number" && "num")}
+          className={cx("h-9 min-w-0 flex-1 bg-transparent px-2.5 text-sm outline-none pointer-coarse:h-11", type === "number" && "num")}
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}

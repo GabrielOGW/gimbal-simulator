@@ -52,7 +52,7 @@ export function SetupList({
               <div className="flex items-center justify-between px-1 pt-1.5">
                 <span className="label !text-[9px]">{CATEGORY_LABELS[cat]}</span>
                 {inCat.length > 0 && (
-                  <button type="button" onClick={() => onAdd(cat)} className="text-[10px] text-ink-400 hover:text-amber">
+                  <button type="button" onClick={() => onAdd(cat)} className="text-[10px] text-ink-400 hover:text-amber pointer-coarse:-my-2 pointer-coarse:px-2 pointer-coarse:py-2.5 pointer-coarse:text-[11px]">
                     + adicionar
                   </button>
                 )}
