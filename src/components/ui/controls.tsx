@@ -100,7 +100,7 @@ export function NumberField({
     if (raw.trim() === shown) return;
     const clamped = Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n));
     onChange(clamped);
-    setDraft(String(clamped));
+    setDraft(String(Math.round(clamped * k) / k));
   };
   const bump = (dir: 1 | -1) => commit(String(Math.round((value + dir * step) * k) / k));
 
