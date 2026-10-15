@@ -22,3 +22,9 @@ export const formatDate = (iso: string): string => {
     ? "—"
     : d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 };
+
+/** Data sem hora (AAAA-MM-DD) → 14/10/2026. Lida como UTC para não voltar um dia em fusos negativos. */
+export const formatDay = (isoDay: string): string => {
+  const d = new Date(`${isoDay}T00:00:00Z`);
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+};

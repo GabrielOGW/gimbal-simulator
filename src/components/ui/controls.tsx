@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import type { DataSource } from "@/lib/equipment/types";
 import { SOURCE_LABELS } from "@/lib/equipment/categories";
+import { formatDay } from "@/lib/format";
 import { Icon, type IconName } from "./Icon";
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(" ");
@@ -143,7 +144,8 @@ export function SourceBadge({ source, compact }: { source: DataSource; compact?:
     estimated: "border-amber/40 text-amber",
     user: "border-go/40 text-go",
   }[source.kind];
-  const title = [SOURCE_LABELS[source.kind], source.reference, source.note].filter(Boolean).join(" — ");
+  const checked = source.checkedAt && `conferido em ${formatDay(source.checkedAt)}`;
+  const title = [SOURCE_LABELS[source.kind], source.reference, checked, source.note].filter(Boolean).join(" — ");
   return (
     <span title={title} className={cx("inline-flex items-center rounded border px-1 text-[9px] font-semibold uppercase tracking-wider", styles)}>
       {compact ? SOURCE_LABELS[source.kind].slice(0, 3) : SOURCE_LABELS[source.kind]}

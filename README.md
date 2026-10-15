@@ -48,11 +48,24 @@ Adicione um objeto ao JSON da categoria em `src/data/equipment/`. Campos mínimo
   "category": "camera",
   "weight": 900,
   "dimensions": { "width": 120, "height": 90, "depth": 100 },
-  "source": { "kind": "official", "reference": "site do fabricante", "note": "corpo sem bateria" }
+  "source": {
+    "kind": "official",
+    "reference": "https://fabricante.com/minha-camera/specs",
+    "checkedAt": "2026-10-14",
+    "note": "corpo apenas, sem bateria e cartão; dimensões sem protuberâncias"
+  }
 }
 ```
 
-`source.kind` é `official` (transcrito do fabricante), `estimated` (aproximado) ou `user` (informado pelo usuário). A UI sempre mostra essa origem (FAB / EST / USU).
+`source.kind` é `official` (conferido na ficha do fabricante), `estimated` (aproximado) ou `user` (informado pelo usuário). A UI sempre mostra essa origem (FAB / EST / USU); o tooltip do selo e o inspetor mostram a fonte e a data da conferência.
+
+Regras do catálogo (o `npm test` cobra as duas primeiras):
+
+- `official` exige `reference` com a **URL da ficha** e `checkedAt` (data ISO da conferência).
+- Itens genéricos (`generic-*`) são sempre `estimated`.
+- Valor que só aparece em revenda (B&H, Adorama…) ou que não pôde ser conferido na página do fabricante fica `estimated`, com a fonte e o motivo na `note`.
+- Escreva na `note` o que a ficha mede: corpo apenas vs. com bateria e cartão, com ou sem protuberâncias, com ou sem colar de tripé.
+- Nos gimbals, a carga máxima costuma ser publicada (`payloadSource`); cursos de ajuste e geometria seguem `estimated`.
 
 ## Sistema de coordenadas e unidades
 
@@ -120,7 +133,7 @@ Caixa envolvente da carga contra o braço do tilt (lado esquerdo, −X) e o moto
 5. **Pan não sofre torque gravitacional com a base vertical.** Ele só importa com o gimbal inclinado (modo lanterna, briefcase). Mostrar um torque de pan no modo vertical seria precisão falsa.
 6. **Capacidade nominal ≠ capacidade utilizável.** A carga máxima dos fabricantes costuma ser "testada" com setup balanceado e sem acessórios pendurados. Daí a margem configurável.
 7. **Dados de internet são imprecisos.** Peso "corpo apenas" vs "com bateria e cartão", dimensões com ou sem protuberâncias, CM quase nunca publicado. Cada valor carrega sua origem; os CMs de lente são estimativas marcadas como tal.
-8. **Curso de ajuste e geometria dos gimbals não são publicados de forma padronizada.** No catálogo eles são `estimated`, e a carga máxima é `official`.
+8. **Curso de ajuste e geometria dos gimbals não são publicados de forma padronizada.** No catálogo eles são `estimated`; a carga máxima é `official` quando conferida na página do fabricante (com URL e data).
 
 ### Fora do escopo (fase 4)
 

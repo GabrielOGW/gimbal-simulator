@@ -1,7 +1,7 @@
 "use client";
 
 import { CATEGORY_LABELS } from "@/lib/equipment/categories";
-import { formatMass } from "@/lib/format";
+import { formatDay, formatMass } from "@/lib/format";
 import { itemCenterOfMass } from "@/lib/simulation/centerOfMass";
 import type { ResolvedItem } from "@/lib/setup/types";
 import type { EulerDeg, Vec3 } from "@/types/geometry";
@@ -41,6 +41,7 @@ export function ItemInspector({
         {(e.source.reference || e.source.note) && (
           <p className="mt-1.5 text-[10px] leading-snug text-ink-400">
             {e.source.reference && <span className="text-ink-300">Fonte: {e.source.reference}. </span>}
+            {e.source.checkedAt && <span className="text-ink-300">Conferido em {formatDay(e.source.checkedAt)}. </span>}
             {e.source.note}
           </p>
         )}

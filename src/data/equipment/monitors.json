@@ -7,13 +7,13 @@
     "weight": 360,
     "dimensions": {
       "width": 151,
-      "height": 92,
-      "depth": 45
+      "height": 91.5,
+      "depth": 31
     },
     "source": {
-      "kind": "official",
-      "reference": "atomos.com — Ninja V",
-      "note": "Sem bateria e sem SSD."
+      "kind": "estimated",
+      "reference": "https://www.cliftoncameras.co.uk/uploads/downloads/Product%20Specifications/Atomos/ATOMOS%20Ninja%20V%20%2B%20Full%20Spec.pdf",
+      "note": "Ficha Atomos reproduzida por revendas: 360 g sem bateria e SSD; 151 × 91,5 × 31 mm. atomos.com bloqueia acesso automatizado, então segue estimado."
     }
   },
   {
@@ -24,12 +24,12 @@
     "weight": 196,
     "dimensions": {
       "width": 151,
-      "height": 92,
-      "depth": 31
+      "height": 91.5,
+      "depth": 31.5
     },
     "source": {
       "kind": "estimated",
-      "note": "Valor aproximado — confira o seu modelo."
+      "note": "Tabela da Atomos reproduzida por revendas: 196 g sem bateria; 151 × 91,5 × 31,5 mm. atomos.com não acessível para conferência."
     }
   },
   {
@@ -37,15 +37,17 @@
     "name": "SmallHD Indie 7",
     "brand": "SmallHD",
     "category": "monitor",
-    "weight": 450,
+    "weight": 536,
     "dimensions": {
-      "width": 195,
-      "height": 125,
-      "depth": 30
+      "width": 180.1,
+      "height": 118.6,
+      "depth": 35.6
     },
     "source": {
-      "kind": "estimated",
-      "note": "Valor aproximado — confira o seu modelo."
+      "kind": "official",
+      "reference": "https://www.smallhd.com/products/indie-7",
+      "checkedAt": "2026-10-14",
+      "note": "Item Weight 18,9 oz, sem bateria; 7,09 × 4,67 × 1,4 in, convertidos."
     }
   },
   {

@@ -9,8 +9,11 @@ const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object
 const isPos = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v) && v > 0;
 const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 const isVec = (v: unknown) => isObj(v) && isNum(v.x) && isNum(v.y) && isNum(v.z);
+const isIsoDay = (v: unknown) => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) && !Number.isNaN(Date.parse(v));
 const isSource = (v: unknown): v is DataSource =>
-  isObj(v) && (v.kind === "official" || v.kind === "estimated" || v.kind === "user");
+  isObj(v) &&
+  (v.kind === "official" || v.kind === "estimated" || v.kind === "user") &&
+  (v.checkedAt === undefined || isIsoDay(v.checkedAt));
 
 /** Valida dados de equipamento vindos de JSON, formulário ou importação. */
 export function validateEquipment(input: unknown): ValidationResult<Equipment> {
@@ -27,7 +30,7 @@ export function validateEquipment(input: unknown): ValidationResult<Equipment> {
   if (!isObj(d) || !isPos(d.width) || !isPos(d.height) || !isPos(d.depth)) {
     errors.push("Largura, altura e profundidade devem ser maiores que zero (mm)");
   }
-  if (!isSource(input.source)) errors.push("Fonte do dado (source.kind) inválida");
+  if (!isSource(input.source)) errors.push("Fonte do dado inválida (source.kind ou source.checkedAt)");
 
   if (input.centerOfMass !== undefined) {
     if (!isVec(input.centerOfMass)) {

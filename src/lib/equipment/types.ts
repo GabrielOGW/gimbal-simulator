@@ -29,8 +29,10 @@ export type DataSourceKind = "official" | "estimated" | "user";
 
 export type DataSource = {
   kind: DataSourceKind;
-  /** Onde o dado foi obtido (página do fabricante, medição própria...) */
+  /** Onde o dado foi obtido. Em `official`, é a URL da ficha do fabricante. */
   reference?: string;
+  /** Data (ISO, AAAA-MM-DD) em que o valor foi conferido na fonte. Obrigatória em `official` no catálogo. */
+  checkedAt?: string;
   note?: string;
 };
 
