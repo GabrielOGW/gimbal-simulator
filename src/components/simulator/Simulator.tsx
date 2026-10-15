@@ -19,7 +19,7 @@ import { BalancePanel } from "@/components/gimbal/BalancePanel";
 import { CustomGimbalForm } from "@/components/gimbal/CustomGimbalForm";
 import { PayloadMeter } from "@/components/gimbal/PayloadMeter";
 import { PosePanel } from "@/components/gimbal/PosePanel";
-import { Button, IconButton, Modal, Section, SourceBadge } from "@/components/ui/controls";
+import { Button, IconButton, Modal, Section, SourceBadge, cx } from "@/components/ui/controls";
 import { UnitsContext } from "@/components/ui/units";
 import { clearanceText } from "@/components/gimbal/copy";
 import { formatMass, formatMm } from "@/lib/format";
@@ -34,7 +34,22 @@ type ModalState =
   | { kind: "gimbal"; initial?: Gimbal }
   | { kind: "presets" }
   | { kind: "about" }
+  | { kind: "menu" }
   | null;
+
+type MenuAction = "presets" | "import" | "export" | "new" | "about";
+const MENU_ACTIONS: [MenuAction, "folder" | "upload" | "download" | "new" | "info", string][] = [
+  ["presets", "folder", "Presets"],
+  ["import", "upload", "Importar arquivo"],
+  ["export", "download", "Exportar arquivo"],
+  ["new", "new", "Novo setup"],
+  ["about", "info", "Como o cálculo funciona"],
+];
+
+/** Abas do celular: o desktop mostra tudo lado a lado. */
+type MobileTab = "balance" | "equip" | "adjust" | "settings";
+const MOBILE_QUERY = "(max-width: 1023.98px)";
+const isMobile = () => typeof window !== "undefined" && window.matchMedia(MOBILE_QUERY).matches;
 
 type Toast = { tone: "info" | "warning" | "error"; lines: string[] } | null;
 
@@ -43,6 +58,12 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
   const [state, dispatch] = useReducer(reducer, catalog, initialState);
   const [modal, setModal] = useState<ModalState>(null);
   const [toast, setToast] = useState<Toast>(null);
+  const [tab, setTab] = useState<MobileTab>("balance");
+  // Troca de aba no celular volta ao topo: o conteúdo novo começa logo abaixo da cena 3D.
+  const goTab = useCallback((t: MobileTab) => {
+    setTab(t);
+    if (isMobile()) window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
   const hydrated = useRef(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -127,7 +148,14 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
     };
   }, []);
 
-  const onSelect = useCallback((id: string | null) => dispatch({ type: "select", instanceId: id }), []);
+  const onSelect = useCallback(
+    (id: string | null) => {
+      dispatch({ type: "select", instanceId: id });
+      // No celular, tocar num item abre a aba onde ficam posição e rotação.
+      if (id && isMobile()) goTab("equip");
+    },
+    [goTab],
+  );
   const onMove = useCallback(
     (id: string, change: { position?: { x: number; y: number; z: number }; rotation?: { x: number; y: number; z: number } }) =>
       dispatch({ type: "move", instanceId: id, ...change }),
@@ -160,6 +188,14 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
     if (!r.ok) return setToast({ tone: "error", lines: r.errors });
     dispatch({ type: "load_setup", setup: r.setup, customEquipment: r.customEquipment, customGimbal: r.customGimbal });
     setToast(r.warnings.length ? { tone: "warning", lines: [`“${r.setup.name}” importado com avisos:`, ...r.warnings] } : { tone: "info", lines: [`“${r.setup.name}” importado.`] });
+  };
+
+  const runMenuAction = (action: MenuAction) => {
+    if (action === "presets" || action === "about") return setModal({ kind: action });
+    setModal(null);
+    if (action === "import") fileInput.current?.click();
+    else if (action === "export") doExport();
+    else dispatch({ type: "new_setup" });
   };
 
   const balanceSection = (
@@ -341,15 +377,18 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
   return (
     <UnitsContext.Provider value={u}>
       <div className="flex min-h-dvh flex-col lg:h-dvh">
+        {/* Faixa da barra de status (notch/Dynamic Island): a cena fixa no topo rola por baixo dela */}
+        <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-30 h-[var(--sa-top)] bg-ink-950 lg:hidden" />
+
         {/* Cabeçalho */}
-        <header className="flex h-12 shrink-0 items-center gap-3 border-b border-ink-700 bg-ink-950 px-3 lg:px-4">
+        <header className="flex h-[calc(3rem+var(--sa-top))] shrink-0 items-center gap-3 border-b border-ink-700 bg-ink-950 pt-[var(--sa-top)] pl-[max(0.75rem,var(--sa-left))] pr-[max(0.75rem,var(--sa-right))] lg:px-4">
           <div className="flex items-center gap-2">
             <span className="relative flex h-6 w-6 items-center justify-center rounded border border-ink-500">
               <span className="h-2 w-2 rounded-full bg-tally" />
             </span>
-            <span className="hidden text-[13px] font-black tracking-[0.2em] sm:inline">GIMBAL SIMULATOR</span>
+            <span className="hidden whitespace-nowrap text-[13px] font-black tracking-[0.2em] lg:inline">GIMBAL SIMULATOR</span>
           </div>
-          <span className="hidden h-5 w-px bg-ink-700 sm:block" />
+          <span className="hidden h-5 w-px bg-ink-700 lg:block" />
           <input
             value={setup.name}
             onChange={(e) => dispatch({ type: "rename", name: e.target.value })}
@@ -361,11 +400,15 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
             <IconButton icon="redo" label="Refazer (Ctrl+Shift+Z)" disabled={!state.future.length} onClick={() => dispatch({ type: "redo" })} />
             <span className="mx-1 hidden h-5 w-px bg-ink-700 sm:block" />
             <HeaderBtn icon="link" label="Compartilhar" onClick={() => void doShare()} />
-            <HeaderBtn icon="folder" label="Presets" onClick={() => setModal({ kind: "presets" })} />
-            <HeaderBtn icon="upload" label="Importar" onClick={() => fileInput.current?.click()} />
-            <HeaderBtn icon="download" label="Exportar" onClick={doExport} />
-            <HeaderBtn icon="new" label="Novo" onClick={() => dispatch({ type: "new_setup" })} />
-            <IconButton icon="info" label="Sobre o modelo" onClick={() => setModal({ kind: "about" })} />
+            {/* No celular em pé, as ações menos usadas vão para o menu */}
+            <div className="hidden items-center gap-0.5 sm:flex">
+              <HeaderBtn icon="folder" label="Presets" onClick={() => setModal({ kind: "presets" })} />
+              <HeaderBtn icon="upload" label="Importar" onClick={() => fileInput.current?.click()} />
+              <HeaderBtn icon="download" label="Exportar" onClick={doExport} />
+              <HeaderBtn icon="new" label="Novo" onClick={() => dispatch({ type: "new_setup" })} />
+              <IconButton icon="info" label="Sobre o modelo" onClick={() => setModal({ kind: "about" })} />
+            </div>
+            <IconButton icon="menu" label="Mais ações" className="sm:hidden" onClick={() => setModal({ kind: "menu" })} />
           </nav>
           <input
             ref={fileInput}
@@ -383,10 +426,12 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
         {error && <div className="bg-stop/15 px-4 py-2 text-sm text-stop">Erro no cálculo: {error}. Revise os dados dos equipamentos.</div>}
 
         {/* Layout: mobile = 3D → balanceamento → equipamentos → detalhes; desktop = 3 colunas */}
+        {/* Celular em pé: cena 3D fixa no topo + uma aba por vez. Celular deitado: cena à esquerda, aba à direita.
+            svh (e não dvh) para a cena não mudar de tamanho quando a barra do navegador some ao rolar. */}
         <main
-          className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] gap-2 p-2 [grid-template-areas:'view'_'balance'_'equip'_'details'] lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:grid-rows-[minmax(0,1fr)_auto] lg:[grid-template-areas:'equip_view_balance'_'details_view_balance']"
+          className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] content-start gap-2 p-2 pb-[calc(var(--tabbar-h)+var(--sa-bottom)+0.5rem)] pl-[max(0.5rem,var(--sa-left))] pr-[max(0.5rem,var(--sa-right))] [grid-template-areas:'view'_'balance'_'details'_'equip'] phone-landscape:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] phone-landscape:[grid-template-areas:'view_balance'_'view_details'_'view_equip'] lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:grid-rows-[minmax(0,1fr)_auto] lg:content-stretch lg:p-2 lg:[grid-template-areas:'equip_view_balance'_'details_view_balance']"
         >
-          <div className="sticky top-0 z-20 h-[44dvh] [grid-area:view] lg:static lg:h-auto">
+          <div className="sticky top-[var(--sa-top)] z-20 h-[42svh] [grid-area:view] phone-landscape:top-2 phone-landscape:h-[calc(100svh-3rem-var(--sa-top)-var(--tabbar-h)-var(--sa-bottom)-1rem)] phone-landscape:self-start lg:static lg:h-auto">
             <Viewport
               items={resolved}
               gimbal={gimbal}
@@ -400,7 +445,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
             />
           </div>
 
-          <aside className="scrollbar-thin space-y-2 [grid-area:balance] lg:min-h-0 lg:overflow-y-auto">
+          <aside className={cx("scrollbar-thin space-y-2 [grid-area:balance] lg:min-h-0 lg:overflow-y-auto", tab !== "balance" && "max-lg:hidden")}>
             {balanceSection}
             <div className="hidden space-y-2 lg:block">
               {adjustSection}
@@ -409,7 +454,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
             </div>
           </aside>
 
-          <aside className="scrollbar-thin space-y-2 [grid-area:equip] lg:min-h-0 lg:overflow-y-auto">
+          <aside className={cx("scrollbar-thin space-y-2 [grid-area:equip] lg:min-h-0 lg:overflow-y-auto", tab !== "equip" && "max-lg:hidden")}>
             <Section title="Equipamentos">
               <SetupList
                 items={resolved}
@@ -439,7 +484,8 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
           </aside>
 
           <aside className="space-y-2 [grid-area:details] lg:max-h-[46dvh] lg:min-h-0 lg:overflow-y-auto scrollbar-thin">
-            <Section title="Detalhes">
+            {/* No celular, os detalhes aparecem na aba Equipamentos, acima da lista, quando há item selecionado */}
+            <Section title="Detalhes" className={cx((tab !== "equip" || !selected) && "max-lg:hidden")}>
               {selected ? (
                 <ItemInspector
                   item={selected}
@@ -452,8 +498,14 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
                 <p className="text-[12px] text-ink-400">Selecione um equipamento na lista ou na cena para editar posição e rotação.</p>
               )}
             </Section>
-            <div className="space-y-2 lg:hidden">
-              {adjustSection}
+            <div className={cx("space-y-2 lg:hidden", tab !== "adjust" && "hidden")}>
+              {adjustSection || (
+                <Section title="Ajustes mecânicos">
+                  <p className="text-[12px] text-ink-400">Escolha um gimbal na aba Balanço para ver os ajustes.</p>
+                </Section>
+              )}
+            </div>
+            <div className={cx("space-y-2 lg:hidden", tab !== "settings" && "hidden")}>
               {settingsSection}
               {disclaimer}
             </div>
@@ -532,6 +584,21 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
             />
           )}
         </Modal>
+        <Modal open={modal?.kind === "menu"} onClose={() => setModal(null)} title="Setup">
+          <div className="grid gap-1.5">
+            {MENU_ACTIONS.map(([action, icon, label]) => (
+              <button
+                key={action}
+                type="button"
+                onClick={() => runMenuAction(action)}
+                className="flex h-12 items-center gap-3 rounded-md border border-ink-700 px-3 text-left text-sm text-ink-100 active:bg-ink-800"
+              >
+                <Icon name={icon} size={18} className="text-ink-300" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </Modal>
         <Modal open={modal?.kind === "about"} onClose={() => setModal(null)} title="Como o cálculo funciona" wide>
           <AboutModel gimbalMasses={!!gimbal?.movingMasses} />
         </Modal>
@@ -540,7 +607,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
           <div
             role="status"
             className={
-              "fixed bottom-4 left-1/2 z-50 w-[min(92vw,420px)] -translate-x-1/2 rounded-md border px-3 py-2 text-[12px] shadow-xl backdrop-blur " +
+              "fixed bottom-[calc(var(--tabbar-h)+var(--sa-bottom)+0.75rem)] left-1/2 z-50 w-[min(92vw,420px)] -translate-x-1/2 rounded-md border px-3 py-2 text-[12px] shadow-xl backdrop-blur lg:bottom-4 " +
               (toast.tone === "error"
                 ? "border-stop/50 bg-ink-950/95 text-stop"
                 : toast.tone === "warning"
@@ -554,8 +621,80 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
             ))}
           </div>
         )}
+        <MobileTabs
+          tab={tab}
+          onChange={goTab}
+          balanceTone={balanceTone(analysis)}
+          itemCount={resolved.length}
+        />
       </div>
     </UnitsContext.Provider>
+  );
+}
+
+/** Cor do indicador da aba Balanço: o pior entre payload e eixos. */
+function balanceTone(a: SetupAnalysis | null): "go" | "amber" | "stop" | null {
+  if (!a?.payload || !a.balance) return null;
+  const axes = Object.values(a.balance.axes).map((x) => x.status);
+  if (a.payload.status === "over_capacity" || axes.includes("out_of_range")) return "stop";
+  if (a.payload.status !== "ok" || axes.includes("adjust")) return "amber";
+  return "go";
+}
+
+const TABS: { id: MobileTab; label: string; icon: "gimbal" | "camera" | "sliders" | "gear" }[] = [
+  { id: "balance", label: "Balanço", icon: "gimbal" },
+  { id: "equip", label: "Equipamentos", icon: "camera" },
+  { id: "adjust", label: "Ajustes", icon: "sliders" },
+  { id: "settings", label: "Critérios", icon: "gear" },
+];
+
+/** Barra de abas do celular, presa embaixo e acima do home indicator. */
+function MobileTabs({
+  tab,
+  onChange,
+  balanceTone,
+  itemCount,
+}: {
+  tab: MobileTab;
+  onChange: (t: MobileTab) => void;
+  balanceTone: "go" | "amber" | "stop" | null;
+  itemCount: number;
+}) {
+  const dot = { go: "bg-go", amber: "bg-amber", stop: "bg-stop" };
+  return (
+    <nav
+      aria-label="Seções"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700 bg-ink-950/95 pb-[var(--sa-bottom)] pl-[var(--sa-left)] pr-[var(--sa-right)] backdrop-blur lg:hidden"
+    >
+      <div role="tablist" className="mx-auto grid h-[var(--tabbar-h)] max-w-xl grid-cols-4">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => onChange(t.id)}
+            className={cx(
+              "relative flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium phone-landscape:flex-row phone-landscape:gap-1.5 phone-landscape:text-[11px]",
+              tab === t.id ? "text-amber" : "text-ink-300 active:text-ink-100",
+            )}
+          >
+            <span className="relative">
+              <Icon name={t.icon} size={20} />
+              {t.id === "balance" && balanceTone && (
+                <span className={cx("absolute -right-1 -top-0.5 h-2 w-2 rounded-full ring-2 ring-ink-950", dot[balanceTone])} />
+              )}
+              {t.id === "equip" && itemCount > 0 && (
+                <span className="num absolute -right-2.5 -top-1 min-w-4 rounded-full bg-ink-600 px-1 text-center text-[9px] leading-4 text-ink-100">
+                  {itemCount}
+                </span>
+              )}
+            </span>
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </div>
+    </nav>
   );
 }
 
@@ -581,7 +720,7 @@ function UnitToggle<T extends string>({
             role="radio"
             aria-checked={value === v}
             onClick={() => onChange(v)}
-            className={"num px-2 py-1 text-[11px] " + (value === v ? "bg-amber text-ink-950" : "text-ink-200 hover:bg-ink-800")}
+            className={"num px-2 py-1 text-[11px] pointer-coarse:px-3 pointer-coarse:py-2 " + (value === v ? "bg-amber text-ink-950" : "text-ink-200 hover:bg-ink-800")}
           >
             {text}
           </button>
@@ -601,7 +740,7 @@ function HeaderBtn({ icon, label, onClick }: { icon: "folder" | "upload" | "down
       className="flex h-8 items-center gap-1.5 rounded-md px-2 text-xs text-ink-200 hover:bg-ink-800 hover:text-ink-100"
     >
       <Icon name={icon} />
-      <span className="hidden md:inline">{label}</span>
+      <span className="hidden whitespace-nowrap lg:inline">{label}</span>
     </button>
   );
 }

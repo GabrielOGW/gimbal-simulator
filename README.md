@@ -168,6 +168,18 @@ Inércia das partes móveis do gimbal (as massas já entram como pontos), moment
 
 `npm test` roda os testes unitários: massa total, CM (incluindo o exemplo 1000 g @ 0 + 500 g @ 100 → 33,33 mm), CM personalizado e rotacionado, CM ausente, setup vazio, valores inválidos, payload e margem, balanceamento (sinais, tolerância, fora de curso, convergência, massas móveis do gimbal), torque por pose, interferência, validação do catálogo, busca, posicionamento automático, import/export, link compartilhado e o reducer da interface (desfazer/refazer).
 
+## Celular e tablet
+
+Abaixo de 1024 px, o layout muda para uso com o dedo:
+
+- **Em pé:** a cena 3D fica fixa no topo, e embaixo aparece uma aba por vez: **Balanço** (gimbal, payload, balanceamento), **Equipamentos** (lista e detalhes do item tocado), **Ajustes** (ajustes mecânicos e pose) e **Critérios**. Tocar num item, na cena ou na lista, abre a aba Equipamentos com os detalhes dele. O ponto colorido na aba Balanço mostra o pior estado entre payload e eixos.
+- **Deitado** (altura até 540 px): cena à esquerda e aba à direita.
+- **Notch, Dynamic Island e home indicator:** a página usa `viewport-fit=cover`, e todo o layout respeita as áreas seguras pelas variáveis `--sa-top`, `--sa-bottom`, `--sa-left` e `--sa-right` (em `globals.css`, a partir de `env(safe-area-inset-*)`). Elas valem para o cabeçalho, a faixa da barra de status sob a cena fixa, a barra de abas, as folhas de diálogo e os avisos.
+- **Toque:** com ponteiro de toque, os alvos têm pelo menos ~36–44 px, e os campos usam fonte de 16 px (abaixo disso, o Safari do iOS dá zoom ao focar). O duplo toque não dá zoom nos controles, e a altura da cena usa `svh` para não pular quando a barra do navegador some.
+- As ações menos usadas (Presets, Importar, Exportar, Novo, Sobre) ficam no menu ☰ quando a largura é menor que 640 px.
+
+O Chromium não simula as áreas seguras. Para testar, sobrescreva `--sa-*` (o script de verificação do PR faz isso com os valores do iPhone 14 Pro) ou abra a preview no aparelho.
+
 ## Atalhos e compartilhamento
 
 | Ação | Atalho |

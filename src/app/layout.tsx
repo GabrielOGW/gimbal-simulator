@@ -11,6 +11,9 @@ export const viewport: Viewport = {
   themeColor: "#08090b",
   width: "device-width",
   initialScale: 1,
+  // Ocupa a tela toda no iPhone (atrás do notch/Dynamic Island e do home
+  // indicator); as áreas seguras são respeitadas via --sa-* em globals.css.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
