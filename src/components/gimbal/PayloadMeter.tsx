@@ -1,6 +1,7 @@
 import type { PayloadEvaluation } from "@/lib/simulation/payload";
 import { formatMass, formatPercent } from "@/lib/format";
 import { StatusPill, cx, type Tone } from "@/components/ui/controls";
+import { useUnits } from "@/components/ui/units";
 
 const STATUS: Record<PayloadEvaluation["status"], { tone: Tone; label: string }> = {
   empty: { tone: "muted", label: "Sem carga" },
@@ -12,6 +13,7 @@ const STATUS: Record<PayloadEvaluation["status"], { tone: Tone; label: string }>
 
 export function PayloadMeter({ p }: { p: PayloadEvaluation }) {
   const s = STATUS[p.status];
+  const u = useUnits();
   const fill = Math.min(1, p.ratio);
   const effPos = p.effectiveCapacity / p.maximum;
   const bar = { go: "bg-go", amber: "bg-amber", stop: "bg-stop", muted: "bg-ink-500", info: "bg-info" }[s.tone];
@@ -21,8 +23,8 @@ export function PayloadMeter({ p }: { p: PayloadEvaluation }) {
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="num text-2xl font-semibold leading-none tracking-tight">
-            {formatMass(p.total, { forceKg: true })}
-            <span className="text-sm font-normal text-ink-400"> / {formatMass(p.maximum, { forceKg: true })}</span>
+            {formatMass(p.total, { forceKg: true }, u)}
+            <span className="text-sm font-normal text-ink-400"> / {formatMass(p.maximum, { forceKg: true }, u)}</span>
           </div>
           <div className="num mt-1 text-[11px] text-ink-300">{formatPercent(p.ratio)} da carga nominal</div>
         </div>
@@ -49,23 +51,23 @@ export function PayloadMeter({ p }: { p: PayloadEvaluation }) {
         <dt className="text-ink-400">Margem</dt>
         <dd className="text-right">{formatPercent(p.safetyMargin, 0)}</dd>
         <dt className="text-ink-400">Capacidade efetiva</dt>
-        <dd className="text-right">{formatMass(p.effectiveCapacity, { forceKg: true })}</dd>
+        <dd className="text-right">{formatMass(p.effectiveCapacity, { forceKg: true }, u)}</dd>
         {p.status === "over_capacity" && (
           <>
             <dt className="text-stop">Excesso</dt>
-            <dd className="text-right text-stop">+{formatMass(p.excess)}</dd>
+            <dd className="text-right text-stop">+{formatMass(p.excess, {}, u)}</dd>
           </>
         )}
         {p.status === "above_margin" && (
           <>
             <dt className="text-amber">Acima da margem</dt>
-            <dd className="text-right text-amber">+{formatMass(p.marginExcess)}</dd>
+            <dd className="text-right text-amber">+{formatMass(p.marginExcess, {}, u)}</dd>
           </>
         )}
         {(p.status === "ok" || p.status === "below_minimum") && (
           <>
             <dt className="text-ink-400">Folga</dt>
-            <dd className="text-right text-go">{formatMass(p.headroom)}</dd>
+            <dd className="text-right text-go">{formatMass(p.headroom, {}, u)}</dd>
           </>
         )}
       </dl>

@@ -78,7 +78,16 @@ Regras do catálogo (o `npm test` cobra as duas primeiras):
 - Origem do **referencial da carga**: centro da base da câmera, sobre a placa de engate rápido.
 - `position` de um item = centro geométrico da caixa envolvente. `centerOfMass` do equipamento = deslocamento do CM **em relação ao centro geométrico**, no referencial local (gira junto com o item).
 - `dimensions`: `width` → X, `height` → Z, `depth` → Y (para lentes: diâmetro × diâmetro × comprimento).
-- Unidades internas: **g**, **mm**, **graus**. Conversão só na apresentação (`lib/format.ts`).
+- Unidades internas: **g**, **mm**, **graus**. Conversão só na apresentação (`lib/format.ts` e `lib/units.ts`).
+
+### Unidades de exibição
+
+Em **Critérios**, o usuário escolhe massa em `g / kg` ou `lb / oz` e distância em `mm` ou `pol (in)`. A escolha fica salva no navegador junto com os outros critérios (`settings.units`) e atualiza a tela inteira na hora: HUD da cena, payload, balanceamento, ajustes, inspetor, lista, seletor e formulários.
+
+- O domínio continua 100% em g e mm. Campos numéricos aceitam a unidade escolhida (passo de 1 mm ou 0,05 in; 0,01 lb) e convertem de volta para g/mm (`fromDisplayLength` / `fromDisplayMass`).
+- **Sem drift:** sair de um campo sem editar não regrava o valor, e formulários devolvem o valor original dos campos não editados (`readField`). Assim, abrir e salvar não arredonda 129,7 mm para 5,11 in → 129,79 mm. Digitar 5 in grava 127 mm, que volta a aparecer como 5 in.
+- Torque continua em **N·m**; com unidades imperiais, mostra também lb·in.
+- Arquivos exportados e links compartilhados são **sempre em g/mm**. A unidade é só preferência de exibição e não entra neles.
 - Na cena 3D, o grupo raiz converte para o padrão Three.js (Y para cima, metros) com `rotation-x = −90°` e `scale = 0.001`, então todo o resto da cena usa o mesmo referencial do domínio.
 
 ## Modelo matemático

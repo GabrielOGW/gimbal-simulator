@@ -1,3 +1,4 @@
+import { METRIC, type DisplayUnits } from "@/lib/units";
 import type { Equipment } from "@/lib/equipment/types";
 import type { GimbalAdjustments } from "@/lib/gimbal/types";
 import type { EulerDeg, Vec3 } from "@/types/geometry";
@@ -39,9 +40,12 @@ export type SimulationSettings = {
   safetyMargin: number;
   /** Resíduo máximo (mm) para considerar um eixo balanceado */
   balanceTolerance: number;
+  /** Unidades de exibição (preferência local). Não entra em arquivos exportados nem links. */
+  units: DisplayUnits;
 };
 
 export const DEFAULT_SETTINGS: SimulationSettings = {
   safetyMargin: 0.1,
   balanceTolerance: 2,
+  units: METRIC,
 };

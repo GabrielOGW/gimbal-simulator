@@ -3,6 +3,7 @@ import type { GimbalPose } from "@/lib/setup/types";
 import type { PoseTorque } from "@/lib/simulation/statics";
 import { formatTorque } from "@/lib/format";
 import { Button } from "@/components/ui/controls";
+import { useUnits } from "@/components/ui/units";
 import { AXIS_LABEL } from "./copy";
 
 export function PosePanel({
@@ -18,6 +19,7 @@ export function PosePanel({
   onChange: (axis: AxisName, v: number) => void;
   onReset: () => void;
 }) {
+  const u = useUnits();
   return (
     <div className="space-y-2.5">
       {(["tilt", "roll", "pan"] as const).map((axis) => {
@@ -43,9 +45,9 @@ export function PosePanel({
       {torque && (
         <div className="num grid grid-cols-2 gap-1 rounded-md bg-ink-850 p-2 text-[11px]">
           <span className="text-ink-400">Torque tilt</span>
-          <span className="text-right">{formatTorque(Math.abs(torque.tilt))}</span>
+          <span className="text-right">{formatTorque(Math.abs(torque.tilt), u)}</span>
           <span className="text-ink-400">Torque roll</span>
-          <span className="text-right">{formatTorque(Math.abs(torque.roll))}</span>
+          <span className="text-right">{formatTorque(Math.abs(torque.roll), u)}</span>
         </div>
       )}
       <div className="flex items-center justify-between gap-2">

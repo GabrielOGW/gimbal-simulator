@@ -1,4 +1,7 @@
 import type { AdjustmentKey, AxisName } from "@/lib/gimbal/types";
+import type { ClearanceIssue } from "@/lib/simulation/clearance";
+import { formatMm } from "@/lib/format";
+import { METRIC, type DisplayUnits } from "@/lib/units";
 
 export const AXIS_LABEL: Record<AxisName, string> = { tilt: "Tilt", roll: "Roll", pan: "Pan" };
 export const AXIS_HINT: Record<AxisName, string> = {
@@ -16,8 +19,8 @@ export const ADJ_LABEL: Record<AdjustmentKey, string> = {
 export const ADJ_AXIS: Record<AdjustmentKey, "x" | "y" | "z"> = { plate: "y", height: "z", roll: "x", pan: "y" };
 
 /** Frase prática para a correção recomendada. */
-export function correctionText(key: AdjustmentKey, delta: number): string {
-  const d = `${Math.abs(delta).toFixed(0)} mm`;
+export function correctionText(key: AdjustmentKey, delta: number, u: DisplayUnits = METRIC): string {
+  const d = formatMm(Math.abs(delta), 0, u);
   switch (key) {
     case "plate":
       return delta > 0 ? `Avançar a câmera ${d} na placa` : `Recuar a câmera ${d} na placa`;
@@ -28,4 +31,10 @@ export function correctionText(key: AdjustmentKey, delta: number): string {
     case "pan":
       return delta > 0 ? `Avançar o braço vertical ${d}` : `Recuar o braço vertical ${d}`;
   }
+}
+
+/** Aviso de interferência na unidade escolhida. */
+export function clearanceText(c: ClearanceIssue, u: DisplayUnits = METRIC): string {
+  const d = formatMm(c.overlap, 0, u);
+  return c.id === "width" ? `A carga avança ${d} sobre o braço do tilt (lado esquerdo).` : `A traseira da carga invade ${d} o espaço do motor roll.`;
 }

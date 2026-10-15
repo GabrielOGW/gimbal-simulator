@@ -10,6 +10,7 @@ import { formatMass, formatSignedMm } from "@/lib/format";
 import { cx } from "@/components/ui/controls";
 import { Icon } from "@/components/ui/Icon";
 import type { TransformMode, ViewName } from "@/components/scene/SceneCanvas";
+import { useUnits } from "@/components/ui/units";
 
 const SceneCanvas = dynamic(() => import("@/components/scene/SceneCanvas"), {
   ssr: false,
@@ -50,6 +51,7 @@ export function Viewport(props: Props) {
   const [showLimits, setShowLimits] = useState(true);
   const { analysis, gimbal } = props;
   const com = analysis?.centerOfMass;
+  const u = useUnits();
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-[10px] border border-ink-700 bg-[#090a0c]">
@@ -67,18 +69,18 @@ export function Viewport(props: Props) {
           <span className="h-2 w-2 animate-pulse rounded-full bg-tally" />
           {gimbal ? gimbal.name.toUpperCase() : "SEM GIMBAL"}
         </div>
-        <div className="num text-lg font-semibold leading-none">{formatMass(analysis?.totalMass ?? 0, { forceKg: true })}</div>
+        <div className="num text-lg font-semibold leading-none">{formatMass(analysis?.totalMass ?? 0, { forceKg: true }, u)}</div>
         {com && (
           <div className="num space-y-0.5 pt-1 text-[11px] leading-none">
             <div className="label !text-[9px]">Centro de massa</div>
             <div>
-              <span className="text-ax-x">X</span> {formatSignedMm(com.x)}
+              <span className="text-ax-x">X</span> {formatSignedMm(com.x, 0, u)}
             </div>
             <div>
-              <span className="text-ax-y">Y</span> {formatSignedMm(com.y)}
+              <span className="text-ax-y">Y</span> {formatSignedMm(com.y, 0, u)}
             </div>
             <div>
-              <span className="text-ax-z">Z</span> {formatSignedMm(com.z)}
+              <span className="text-ax-z">Z</span> {formatSignedMm(com.z, 0, u)}
             </div>
           </div>
         )}

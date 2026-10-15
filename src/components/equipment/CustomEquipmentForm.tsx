@@ -7,9 +7,8 @@ import { validateEquipment } from "@/lib/equipment/validation";
 import { newId } from "@/lib/setup/factory";
 import { Button, TextField } from "@/components/ui/controls";
 import { Icon } from "@/components/ui/Icon";
-
-const n = (s: string) => (s.trim() === "" ? NaN : Number(s.replace(",", ".")));
-const str = (v: number | undefined) => (v === undefined ? "" : String(v));
+import { useUnits } from "@/components/ui/units";
+import { fromDisplayLength, fromDisplayMass, lengthFieldText, massFieldText, readField } from "@/lib/units";
 
 export function CustomEquipmentForm({
   initial,
@@ -24,16 +23,29 @@ export function CustomEquipmentForm({
   onCancel: () => void;
 }) {
   const editing = initial?.custom === true;
+  const u = useUnits();
+  // Texto inicial de cada campo na unidade escolhida; `read` devolve g/mm sem
+  // arredondar o que o usuário não editou.
+  const initialText = {
+    weight: initial ? massFieldText(initial.weight, u) : "",
+    width: initial ? lengthFieldText(initial.dimensions.width, u) : "",
+    height: initial ? lengthFieldText(initial.dimensions.height, u) : "",
+    depth: initial ? lengthFieldText(initial.dimensions.depth, u) : "",
+    cx: lengthFieldText(initial?.centerOfMass?.x ?? 0, u),
+    cy: lengthFieldText(initial?.centerOfMass?.y ?? 0, u),
+    cz: lengthFieldText(initial?.centerOfMass?.z ?? 0, u),
+  };
+  const len = (text: string, init: string, mm: number | undefined) => readField(text, init, mm, (v) => fromDisplayLength(v, u));
   const [name, setName] = useState(initial ? (editing ? initial.name : `${initial.name} (meu)`) : "");
   const [category, setCategory] = useState<EquipmentCategory>(initial?.category ?? defaultCategory ?? "accessory");
-  const [weight, setWeight] = useState(str(initial?.weight));
-  const [width, setWidth] = useState(str(initial?.dimensions.width));
-  const [height, setHeight] = useState(str(initial?.dimensions.height));
-  const [depth, setDepth] = useState(str(initial?.dimensions.depth));
+  const [weight, setWeight] = useState(initialText.weight);
+  const [width, setWidth] = useState(initialText.width);
+  const [height, setHeight] = useState(initialText.height);
+  const [depth, setDepth] = useState(initialText.depth);
   const [knowsCom, setKnowsCom] = useState(initial?.centerOfMass !== undefined);
-  const [cx, setCx] = useState(str(initial?.centerOfMass?.x ?? 0));
-  const [cy, setCy] = useState(str(initial?.centerOfMass?.y ?? 0));
-  const [cz, setCz] = useState(str(initial?.centerOfMass?.z ?? 0));
+  const [cx, setCx] = useState(initialText.cx);
+  const [cy, setCy] = useState(initialText.cy);
+  const [cz, setCz] = useState(initialText.cz);
   const [reference, setReference] = useState(editing ? initial?.source.reference ?? "" : "");
   const [errors, setErrors] = useState<string[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
@@ -44,11 +56,15 @@ export function CustomEquipmentForm({
       name: name.trim(),
       brand: initial?.brand,
       category,
-      weight: n(weight),
-      dimensions: { width: n(width), height: n(height), depth: n(depth) },
+      weight: readField(weight, initialText.weight, initial?.weight, (v) => fromDisplayMass(v, u)),
+      dimensions: {
+        width: len(width, initialText.width, initial?.dimensions.width),
+        height: len(height, initialText.height, initial?.dimensions.height),
+        depth: len(depth, initialText.depth, initial?.dimensions.depth),
+      },
       source: { kind: "user", ...(reference.trim() ? { reference: reference.trim() } : {}) },
       custom: true,
-      ...(knowsCom ? { centerOfMass: { x: n(cx), y: n(cy), z: n(cz) }, centerOfMassSource: { kind: "user" as const } } : {}),
+      ...(knowsCom ? { centerOfMass: { x: len(cx, initialText.cx, initial?.centerOfMass?.x ?? 0), y: len(cy, initialText.cy, initial?.centerOfMass?.y ?? 0), z: len(cz, initialText.cz, initial?.centerOfMass?.z ?? 0) }, centerOfMassSource: { kind: "user" as const } } : {}),
       ...(initial?.mountingPoints && !editing ? { mountingPoints: initial.mountingPoints } : {}),
       ...(initial?.metadata ? { metadata: initial.metadata } : {}),
     };
@@ -76,11 +92,11 @@ export function CustomEquipmentForm({
           ))}
         </select>
       </label>
-      <TextField label="Peso" type="number" unit="g" value={weight} onChange={setWeight} required />
+      <TextField label="Peso" type="number" unit={u.mass} value={weight} onChange={setWeight} required />
       <div className="grid grid-cols-3 gap-2">
-        <TextField label="Largura (X)" type="number" unit="mm" value={width} onChange={setWidth} required />
-        <TextField label="Altura (Z)" type="number" unit="mm" value={height} onChange={setHeight} required />
-        <TextField label="Profund. (Y)" type="number" unit="mm" value={depth} onChange={setDepth} required />
+        <TextField label="Largura (X)" type="number" unit={u.length} value={width} onChange={setWidth} required />
+        <TextField label="Altura (Z)" type="number" unit={u.length} value={height} onChange={setHeight} required />
+        <TextField label="Profund. (Y)" type="number" unit={u.length} value={depth} onChange={setDepth} required />
       </div>
       <p className="text-[11px] leading-snug text-ink-400">
         Profundidade = medida no sentido da lente (frente/trás). Para lentes, informe o diâmetro em largura e altura e o comprimento em profundidade.
@@ -94,9 +110,9 @@ export function CustomEquipmentForm({
         {knowsCom ? (
           <>
             <div className="mt-2 grid grid-cols-3 gap-2">
-              <TextField label="X" type="number" unit="mm" value={cx} onChange={setCx} />
-              <TextField label="Y" type="number" unit="mm" value={cy} onChange={setCy} />
-              <TextField label="Z" type="number" unit="mm" value={cz} onChange={setCz} />
+              <TextField label="X" type="number" unit={u.length} value={cx} onChange={setCx} />
+              <TextField label="Y" type="number" unit={u.length} value={cy} onChange={setCy} />
+              <TextField label="Z" type="number" unit={u.length} value={cz} onChange={setCz} />
             </div>
             <p className="mt-2 text-[11px] leading-snug text-ink-400">
               Deslocamento em relação ao centro geométrico da caixa. Ex.: lente mais pesada perto da baioneta → Y negativo.

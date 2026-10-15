@@ -15,6 +15,18 @@ describe("reducer do simulador", async () => {
     expect(start.past).toEqual([]);
   });
 
+  it("estado salvo sem unidades (versão antiga) carrega em g/mm", () => {
+    const s = run(start, { type: "hydrate", state: { setup: start.setup, settings: { safetyMargin: 0.2, balanceTolerance: 3 } as SimState["settings"] } });
+    expect(s.settings).toEqual({ safetyMargin: 0.2, balanceTolerance: 3, units: { mass: "g", length: "mm" } });
+  });
+
+  it("trocar a unidade não entra no desfazer nem muda o setup", () => {
+    const s = run(start, { type: "settings", settings: { units: { mass: "lb", length: "in" } } });
+    expect(s.settings.units).toEqual({ mass: "lb", length: "in" });
+    expect(s.setup).toBe(start.setup);
+    expect(s.past).toEqual([]);
+  });
+
   it("adicionar seleciona o item e pode ser desfeito/refeito", () => {
     const s1 = run(start, { type: "add", equipment: lens });
     expect(s1.setup.items).toHaveLength(start.setup.items.length + 1);

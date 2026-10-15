@@ -4,9 +4,10 @@ import { useMemo, useState } from "react";
 import { CATEGORY_CODES, CATEGORY_LABELS } from "@/lib/equipment/categories";
 import { searchEquipment } from "@/lib/equipment/search";
 import { EQUIPMENT_CATEGORIES, type Equipment, type EquipmentCategory } from "@/lib/equipment/types";
-import { formatMass } from "@/lib/format";
+import { formatDims, formatMass } from "@/lib/format";
 import { Button, SourceBadge, cx } from "@/components/ui/controls";
 import { Icon } from "@/components/ui/Icon";
+import { useUnits } from "@/components/ui/units";
 
 export function EquipmentPicker({
   equipment,
@@ -19,6 +20,7 @@ export function EquipmentPicker({
   onPick: (e: Equipment) => void;
   onCreateCustom: (category: EquipmentCategory | null) => void;
 }) {
+  const u = useUnits();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<EquipmentCategory | null>(initialCategory);
   const results = useMemo(() => searchEquipment(equipment, query, category), [equipment, query, category]);
@@ -68,11 +70,11 @@ export function EquipmentPicker({
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm">{e.name}</span>
                 <span className="num block text-[10px] text-ink-400">
-                  {e.dimensions.width}×{e.dimensions.height}×{e.dimensions.depth} mm
+                  {formatDims(e.dimensions, u)}
                 </span>
               </span>
               <span className="flex shrink-0 flex-col items-end gap-1">
-                <span className="num text-sm">{formatMass(e.weight)}</span>
+                <span className="num text-sm">{formatMass(e.weight, {}, u)}</span>
                 <SourceBadge source={e.source} compact />
               </span>
             </button>

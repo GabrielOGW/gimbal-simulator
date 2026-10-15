@@ -20,6 +20,9 @@ import { CustomGimbalForm } from "@/components/gimbal/CustomGimbalForm";
 import { PayloadMeter } from "@/components/gimbal/PayloadMeter";
 import { PosePanel } from "@/components/gimbal/PosePanel";
 import { Button, IconButton, Modal, Section, SourceBadge } from "@/components/ui/controls";
+import { UnitsContext } from "@/components/ui/units";
+import { clearanceText } from "@/components/gimbal/copy";
+import { formatMass, formatMm } from "@/lib/format";
 import { Icon } from "@/components/ui/Icon";
 import { PresetsPanel } from "./PresetsPanel";
 import { allGimbals, createReducer, equipmentIndex, initialState, type SimState } from "./state";
@@ -76,6 +79,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
   }, [toast]);
 
   const { setup, settings } = state;
+  const u = settings.units;
   const byId = useMemo(() => equipmentIndex(catalog, state.customEquipment), [catalog, state.customEquipment]);
   const gimbals = useMemo(() => allGimbals(catalog, state.customGimbals), [catalog, state.customGimbals]);
   const gimbal = gimbals.find((g) => g.id === setup.gimbalId) ?? null;
@@ -178,7 +182,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
           <optgroup label="Catálogo">
             {catalog.gimbals.map((g) => (
               <option key={g.id} value={g.id}>
-                {g.name} · {(g.payload.maximum / 1000).toFixed(1)} kg
+                {g.name} · {formatMass(g.payload.maximum, { forceKg: true }, u)}
               </option>
             ))}
           </optgroup>
@@ -186,7 +190,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
             <optgroup label="Personalizados">
               {state.customGimbals.map((g) => (
                 <option key={g.id} value={g.id}>
-                  {g.name} · {(g.payload.maximum / 1000).toFixed(1)} kg
+                  {g.name} · {formatMass(g.payload.maximum, { forceKg: true }, u)}
                 </option>
               ))}
             </optgroup>
@@ -226,7 +230,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
           <ul className="space-y-1 text-[12px] text-amber">
             {analysis.clearance.map((c) => (
               <li key={c.id} className="flex gap-1.5">
-                <Icon name="alert" size={14} className="mt-px shrink-0" /> {c.message}
+                <Icon name="alert" size={14} className="mt-px shrink-0" /> {clearanceText(c, u)}
               </li>
             ))}
           </ul>
@@ -282,7 +286,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
         <label className="block">
           <span className="flex justify-between">
             <span className="text-ink-200">Tolerância de balanceamento</span>
-            <span className="num">{settings.balanceTolerance} mm</span>
+            <span className="num">{formatMm(settings.balanceTolerance, 1, u)}</span>
           </span>
           <input
             type="range"
@@ -294,6 +298,25 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
             className="w-full"
           />
         </label>
+        <UnitToggle
+          label="Massa"
+          value={u.mass}
+          options={[
+            ["g", "g / kg"],
+            ["lb", "lb / oz"],
+          ]}
+          onChange={(mass) => dispatch({ type: "settings", settings: { units: { ...u, mass } } })}
+        />
+        <UnitToggle
+          label="Distância"
+          value={u.length}
+          options={[
+            ["mm", "mm"],
+            ["in", "pol (in)"],
+          ]}
+          onChange={(length) => dispatch({ type: "settings", settings: { units: { ...u, length } } })}
+        />
+        <p className="text-[10px] leading-snug text-ink-400">Só muda a exibição. Arquivos exportados e links continuam em g e mm.</p>
       </div>
     </Section>
   );
@@ -316,220 +339,254 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
   );
 
   return (
-    <div className="flex min-h-dvh flex-col lg:h-dvh">
-      {/* Cabeçalho */}
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-ink-700 bg-ink-950 px-3 lg:px-4">
-        <div className="flex items-center gap-2">
-          <span className="relative flex h-6 w-6 items-center justify-center rounded border border-ink-500">
-            <span className="h-2 w-2 rounded-full bg-tally" />
-          </span>
-          <span className="hidden text-[13px] font-black tracking-[0.2em] sm:inline">GIMBAL SIMULATOR</span>
-        </div>
-        <span className="hidden h-5 w-px bg-ink-700 sm:block" />
-        <input
-          value={setup.name}
-          onChange={(e) => dispatch({ type: "rename", name: e.target.value })}
-          className="h-8 min-w-0 flex-1 rounded-md bg-transparent px-2 text-sm font-medium outline-none hover:bg-ink-850 focus:bg-ink-850 sm:max-w-sm"
-          aria-label="Nome do setup"
-        />
-        <nav className="ml-auto flex items-center gap-0.5">
-          <IconButton icon="undo" label="Desfazer (Ctrl+Z)" disabled={!state.past.length} onClick={() => dispatch({ type: "undo" })} />
-          <IconButton icon="redo" label="Refazer (Ctrl+Shift+Z)" disabled={!state.future.length} onClick={() => dispatch({ type: "redo" })} />
-          <span className="mx-1 hidden h-5 w-px bg-ink-700 sm:block" />
-          <HeaderBtn icon="link" label="Compartilhar" onClick={() => void doShare()} />
-          <HeaderBtn icon="folder" label="Presets" onClick={() => setModal({ kind: "presets" })} />
-          <HeaderBtn icon="upload" label="Importar" onClick={() => fileInput.current?.click()} />
-          <HeaderBtn icon="download" label="Exportar" onClick={doExport} />
-          <HeaderBtn icon="new" label="Novo" onClick={() => dispatch({ type: "new_setup" })} />
-          <IconButton icon="info" label="Sobre o modelo" onClick={() => setModal({ kind: "about" })} />
-        </nav>
-        <input
-          ref={fileInput}
-          type="file"
-          accept="application/json,.json"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) void doImport(f);
-            e.target.value = "";
-          }}
-        />
-      </header>
-
-      {error && <div className="bg-stop/15 px-4 py-2 text-sm text-stop">Erro no cálculo: {error}. Revise os dados dos equipamentos.</div>}
-
-      {/* Layout: mobile = 3D → balanceamento → equipamentos → detalhes; desktop = 3 colunas */}
-      <main
-        className="grid min-h-0 flex-1 gap-2 p-2 [grid-template-areas:'view'_'balance'_'equip'_'details'] lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:grid-rows-[minmax(0,1fr)_auto] lg:[grid-template-areas:'equip_view_balance'_'details_view_balance']"
-      >
-        <div className="sticky top-0 z-20 h-[44dvh] [grid-area:view] lg:static lg:h-auto">
-          <Viewport
-            items={resolved}
-            gimbal={gimbal}
-            adjustments={setup.adjustments}
-            pose={setup.pose}
-            analysis={analysis}
-            tolerance={settings.balanceTolerance}
-            selectedId={state.selectedId}
-            onSelect={onSelect}
-            onMove={onMove}
-          />
-        </div>
-
-        <aside className="scrollbar-thin space-y-2 [grid-area:balance] lg:min-h-0 lg:overflow-y-auto">
-          {balanceSection}
-          <div className="hidden space-y-2 lg:block">
-            {adjustSection}
-            {settingsSection}
-            {disclaimer}
+    <UnitsContext.Provider value={u}>
+      <div className="flex min-h-dvh flex-col lg:h-dvh">
+        {/* Cabeçalho */}
+        <header className="flex h-12 shrink-0 items-center gap-3 border-b border-ink-700 bg-ink-950 px-3 lg:px-4">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-6 w-6 items-center justify-center rounded border border-ink-500">
+              <span className="h-2 w-2 rounded-full bg-tally" />
+            </span>
+            <span className="hidden text-[13px] font-black tracking-[0.2em] sm:inline">GIMBAL SIMULATOR</span>
           </div>
-        </aside>
+          <span className="hidden h-5 w-px bg-ink-700 sm:block" />
+          <input
+            value={setup.name}
+            onChange={(e) => dispatch({ type: "rename", name: e.target.value })}
+            className="h-8 min-w-0 flex-1 rounded-md bg-transparent px-2 text-sm font-medium outline-none hover:bg-ink-850 focus:bg-ink-850 sm:max-w-sm"
+            aria-label="Nome do setup"
+          />
+          <nav className="ml-auto flex items-center gap-0.5">
+            <IconButton icon="undo" label="Desfazer (Ctrl+Z)" disabled={!state.past.length} onClick={() => dispatch({ type: "undo" })} />
+            <IconButton icon="redo" label="Refazer (Ctrl+Shift+Z)" disabled={!state.future.length} onClick={() => dispatch({ type: "redo" })} />
+            <span className="mx-1 hidden h-5 w-px bg-ink-700 sm:block" />
+            <HeaderBtn icon="link" label="Compartilhar" onClick={() => void doShare()} />
+            <HeaderBtn icon="folder" label="Presets" onClick={() => setModal({ kind: "presets" })} />
+            <HeaderBtn icon="upload" label="Importar" onClick={() => fileInput.current?.click()} />
+            <HeaderBtn icon="download" label="Exportar" onClick={doExport} />
+            <HeaderBtn icon="new" label="Novo" onClick={() => dispatch({ type: "new_setup" })} />
+            <IconButton icon="info" label="Sobre o modelo" onClick={() => setModal({ kind: "about" })} />
+          </nav>
+          <input
+            ref={fileInput}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) void doImport(f);
+              e.target.value = "";
+            }}
+          />
+        </header>
 
-        <aside className="scrollbar-thin space-y-2 [grid-area:equip] lg:min-h-0 lg:overflow-y-auto">
-          <Section title="Equipamentos">
-            <SetupList
+        {error && <div className="bg-stop/15 px-4 py-2 text-sm text-stop">Erro no cálculo: {error}. Revise os dados dos equipamentos.</div>}
+
+        {/* Layout: mobile = 3D → balanceamento → equipamentos → detalhes; desktop = 3 colunas */}
+        <main
+          className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] gap-2 p-2 [grid-template-areas:'view'_'balance'_'equip'_'details'] lg:grid-cols-[300px_minmax(0,1fr)_340px] lg:grid-rows-[minmax(0,1fr)_auto] lg:[grid-template-areas:'equip_view_balance'_'details_view_balance']"
+        >
+          <div className="sticky top-0 z-20 h-[44dvh] [grid-area:view] lg:static lg:h-auto">
+            <Viewport
               items={resolved}
-              missing={missing}
-              totalMass={analysis?.totalMass ?? 0}
+              gimbal={gimbal}
+              adjustments={setup.adjustments}
+              pose={setup.pose}
+              analysis={analysis}
+              tolerance={settings.balanceTolerance}
               selectedId={state.selectedId}
               onSelect={onSelect}
-              onAdd={(category) => setModal({ kind: "picker", category })}
-              onRemove={(id) => dispatch({ type: "remove", instanceId: id })}
-              onDuplicate={(id) => dispatch({ type: "duplicate", instanceId: id })}
+              onMove={onMove}
             />
-            <div className="mt-2 flex gap-1.5">
-              <Button size="sm" variant="ghost" icon="center" onClick={() => dispatch({ type: "center" })} disabled={!resolved.length}>
-                Centralizar setup
-              </Button>
-            </div>
-            {notices.length > 0 && (
-              <ul className="mt-2 space-y-1">
-                {notices.map((n) => (
-                  <li key={n.id} className={n.level === "warning" ? "text-[11px] text-amber" : "text-[11px] text-ink-400"}>
-                    • {n.message}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Section>
-        </aside>
-
-        <aside className="space-y-2 [grid-area:details] lg:max-h-[46dvh] lg:min-h-0 lg:overflow-y-auto scrollbar-thin">
-          <Section title="Detalhes">
-            {selected ? (
-              <ItemInspector
-                item={selected}
-                onMove={(change) => onMove(selected.instanceId, change)}
-                onReset={() => dispatch({ type: "reset_item", instanceId: selected.instanceId })}
-                onEdit={() => setModal({ kind: "custom", initial: selected.equipment, replaceInstance: selected.instanceId })}
-                onRemove={() => dispatch({ type: "remove", instanceId: selected.instanceId })}
-              />
-            ) : (
-              <p className="text-[12px] text-ink-400">Selecione um equipamento na lista ou na cena para editar posição e rotação.</p>
-            )}
-          </Section>
-          <div className="space-y-2 lg:hidden">
-            {adjustSection}
-            {settingsSection}
-            {disclaimer}
           </div>
-        </aside>
-      </main>
 
-      {/* Modais */}
-      <Modal open={modal?.kind === "picker"} onClose={() => setModal(null)} title="Adicionar equipamento" wide>
-        {modal?.kind === "picker" && (
-          <EquipmentPicker
-            equipment={allEquipment}
-            initialCategory={modal.category}
-            onPick={(e) => {
-              dispatch({ type: "add", equipment: e });
-              setModal(null);
-            }}
-            onCreateCustom={(category) => setModal({ kind: "custom", category })}
-          />
-        )}
-      </Modal>
-      <Modal
-        open={modal?.kind === "custom"}
-        onClose={() => setModal(null)}
-        title={modal?.kind === "custom" && modal.initial?.custom ? "Editar equipamento" : "Equipamento personalizado"}
-      >
-        {modal?.kind === "custom" && (
-          <CustomEquipmentForm
-            initial={modal.initial}
-            defaultCategory={modal.category ?? undefined}
-            onCancel={() => setModal(null)}
-            onSave={(e) => {
-              const wasCustom = modal.initial?.custom === true;
-              dispatch({ type: "upsert_custom_equipment", equipment: e });
-              if (!wasCustom) {
-                // Cópia editável de um item já montado: mantém posição e rotação
-                if (modal.replaceInstance) dispatch({ type: "replace_equipment", instanceId: modal.replaceInstance, equipment: e });
-                else dispatch({ type: "add", equipment: e });
-              }
-              setModal(null);
-              setToast({ tone: "info", lines: [wasCustom ? `“${e.name}” atualizado.` : modal.replaceInstance ? `“${e.name}” criado no lugar do original.` : `“${e.name}” cadastrado e adicionado.`] });
-            }}
-          />
-        )}
-      </Modal>
-      <Modal open={modal?.kind === "gimbal"} onClose={() => setModal(null)} title="Gimbal personalizado">
-        {modal?.kind === "gimbal" && (
-          <CustomGimbalForm
-            templates={catalog.gimbals}
-            initial={modal.initial}
-            onCancel={() => setModal(null)}
-            onSave={(g) => {
-              dispatch({ type: "upsert_custom_gimbal", gimbal: g });
-              setModal(null);
-            }}
-          />
-        )}
-      </Modal>
-      <Modal open={modal?.kind === "presets"} onClose={() => setModal(null)} title="Presets">
-        {modal?.kind === "presets" && (
-          <PresetsPanel
-            currentName={setup.name}
-            presets={state.presets}
-            onSave={(name) => {
-              dispatch({ type: "save_preset", name });
-              setToast({ tone: "info", lines: [`Preset “${name}” salvo.`] });
-            }}
-            onLoad={(p) => {
-              dispatch({ type: "load_setup", setup: { ...p, updatedAt: new Date().toISOString() } });
-              setModal(null);
-            }}
-            onLoadBuiltin={(id) => {
-              dispatch({ type: "load_builtin", presetId: id });
-              setModal(null);
-            }}
-            onDelete={(id) => dispatch({ type: "delete_preset", id })}
-          />
-        )}
-      </Modal>
-      <Modal open={modal?.kind === "about"} onClose={() => setModal(null)} title="Como o cálculo funciona" wide>
-        <AboutModel gimbalMasses={!!gimbal?.movingMasses} />
-      </Modal>
+          <aside className="scrollbar-thin space-y-2 [grid-area:balance] lg:min-h-0 lg:overflow-y-auto">
+            {balanceSection}
+            <div className="hidden space-y-2 lg:block">
+              {adjustSection}
+              {settingsSection}
+              {disclaimer}
+            </div>
+          </aside>
 
-      {toast && (
-        <div
-          role="status"
-          className={
-            "fixed bottom-4 left-1/2 z-50 w-[min(92vw,420px)] -translate-x-1/2 rounded-md border px-3 py-2 text-[12px] shadow-xl backdrop-blur " +
-            (toast.tone === "error"
-              ? "border-stop/50 bg-ink-950/95 text-stop"
-              : toast.tone === "warning"
-                ? "border-amber/50 bg-ink-950/95 text-amber"
-                : "border-ink-600 bg-ink-950/95 text-ink-100")
-          }
-          onClick={() => setToast(null)}
+          <aside className="scrollbar-thin space-y-2 [grid-area:equip] lg:min-h-0 lg:overflow-y-auto">
+            <Section title="Equipamentos">
+              <SetupList
+                items={resolved}
+                missing={missing}
+                totalMass={analysis?.totalMass ?? 0}
+                selectedId={state.selectedId}
+                onSelect={onSelect}
+                onAdd={(category) => setModal({ kind: "picker", category })}
+                onRemove={(id) => dispatch({ type: "remove", instanceId: id })}
+                onDuplicate={(id) => dispatch({ type: "duplicate", instanceId: id })}
+              />
+              <div className="mt-2 flex gap-1.5">
+                <Button size="sm" variant="ghost" icon="center" onClick={() => dispatch({ type: "center" })} disabled={!resolved.length}>
+                  Centralizar setup
+                </Button>
+              </div>
+              {notices.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {notices.map((n) => (
+                    <li key={n.id} className={n.level === "warning" ? "text-[11px] text-amber" : "text-[11px] text-ink-400"}>
+                      • {n.message}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Section>
+          </aside>
+
+          <aside className="space-y-2 [grid-area:details] lg:max-h-[46dvh] lg:min-h-0 lg:overflow-y-auto scrollbar-thin">
+            <Section title="Detalhes">
+              {selected ? (
+                <ItemInspector
+                  item={selected}
+                  onMove={(change) => onMove(selected.instanceId, change)}
+                  onReset={() => dispatch({ type: "reset_item", instanceId: selected.instanceId })}
+                  onEdit={() => setModal({ kind: "custom", initial: selected.equipment, replaceInstance: selected.instanceId })}
+                  onRemove={() => dispatch({ type: "remove", instanceId: selected.instanceId })}
+                />
+              ) : (
+                <p className="text-[12px] text-ink-400">Selecione um equipamento na lista ou na cena para editar posição e rotação.</p>
+              )}
+            </Section>
+            <div className="space-y-2 lg:hidden">
+              {adjustSection}
+              {settingsSection}
+              {disclaimer}
+            </div>
+          </aside>
+        </main>
+
+        {/* Modais */}
+        <Modal open={modal?.kind === "picker"} onClose={() => setModal(null)} title="Adicionar equipamento" wide>
+          {modal?.kind === "picker" && (
+            <EquipmentPicker
+              equipment={allEquipment}
+              initialCategory={modal.category}
+              onPick={(e) => {
+                dispatch({ type: "add", equipment: e });
+                setModal(null);
+              }}
+              onCreateCustom={(category) => setModal({ kind: "custom", category })}
+            />
+          )}
+        </Modal>
+        <Modal
+          open={modal?.kind === "custom"}
+          onClose={() => setModal(null)}
+          title={modal?.kind === "custom" && modal.initial?.custom ? "Editar equipamento" : "Equipamento personalizado"}
         >
-          {toast.lines.map((l) => (
-            <div key={l}>{l}</div>
-          ))}
-        </div>
-      )}
+          {modal?.kind === "custom" && (
+            <CustomEquipmentForm
+              initial={modal.initial}
+              defaultCategory={modal.category ?? undefined}
+              onCancel={() => setModal(null)}
+              onSave={(e) => {
+                const wasCustom = modal.initial?.custom === true;
+                dispatch({ type: "upsert_custom_equipment", equipment: e });
+                if (!wasCustom) {
+                  // Cópia editável de um item já montado: mantém posição e rotação
+                  if (modal.replaceInstance) dispatch({ type: "replace_equipment", instanceId: modal.replaceInstance, equipment: e });
+                  else dispatch({ type: "add", equipment: e });
+                }
+                setModal(null);
+                setToast({ tone: "info", lines: [wasCustom ? `“${e.name}” atualizado.` : modal.replaceInstance ? `“${e.name}” criado no lugar do original.` : `“${e.name}” cadastrado e adicionado.`] });
+              }}
+            />
+          )}
+        </Modal>
+        <Modal open={modal?.kind === "gimbal"} onClose={() => setModal(null)} title="Gimbal personalizado">
+          {modal?.kind === "gimbal" && (
+            <CustomGimbalForm
+              templates={catalog.gimbals}
+              initial={modal.initial}
+              onCancel={() => setModal(null)}
+              onSave={(g) => {
+                dispatch({ type: "upsert_custom_gimbal", gimbal: g });
+                setModal(null);
+              }}
+            />
+          )}
+        </Modal>
+        <Modal open={modal?.kind === "presets"} onClose={() => setModal(null)} title="Presets">
+          {modal?.kind === "presets" && (
+            <PresetsPanel
+              currentName={setup.name}
+              presets={state.presets}
+              onSave={(name) => {
+                dispatch({ type: "save_preset", name });
+                setToast({ tone: "info", lines: [`Preset “${name}” salvo.`] });
+              }}
+              onLoad={(p) => {
+                dispatch({ type: "load_setup", setup: { ...p, updatedAt: new Date().toISOString() } });
+                setModal(null);
+              }}
+              onLoadBuiltin={(id) => {
+                dispatch({ type: "load_builtin", presetId: id });
+                setModal(null);
+              }}
+              onDelete={(id) => dispatch({ type: "delete_preset", id })}
+            />
+          )}
+        </Modal>
+        <Modal open={modal?.kind === "about"} onClose={() => setModal(null)} title="Como o cálculo funciona" wide>
+          <AboutModel gimbalMasses={!!gimbal?.movingMasses} />
+        </Modal>
+
+        {toast && (
+          <div
+            role="status"
+            className={
+              "fixed bottom-4 left-1/2 z-50 w-[min(92vw,420px)] -translate-x-1/2 rounded-md border px-3 py-2 text-[12px] shadow-xl backdrop-blur " +
+              (toast.tone === "error"
+                ? "border-stop/50 bg-ink-950/95 text-stop"
+                : toast.tone === "warning"
+                  ? "border-amber/50 bg-ink-950/95 text-amber"
+                  : "border-ink-600 bg-ink-950/95 text-ink-100")
+            }
+            onClick={() => setToast(null)}
+          >
+            {toast.lines.map((l) => (
+              <div key={l}>{l}</div>
+            ))}
+          </div>
+        )}
+      </div>
+    </UnitsContext.Provider>
+  );
+}
+
+function UnitToggle<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: [T, string][];
+  onChange: (v: T) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className="text-ink-200">{label}</span>
+      <div role="radiogroup" aria-label={label} className="flex overflow-hidden rounded-md border border-ink-600">
+        {options.map(([v, text]) => (
+          <button
+            key={v}
+            type="button"
+            role="radio"
+            aria-checked={value === v}
+            onClick={() => onChange(v)}
+            className={"num px-2 py-1 text-[11px] " + (value === v ? "bg-amber text-ink-950" : "text-ink-200 hover:bg-ink-800")}
+          >
+            {text}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -554,7 +611,7 @@ function AboutModel({ gimbalMasses }: { gimbalMasses: boolean }) {
     <div className="space-y-3 text-[13px] leading-relaxed text-ink-200">
       <p>
         <b>Referencial:</b> X = esquerda/direita, Y = trás/frente (a lente aponta para +Y), Z = baixo/cima. Origem no centro da base da câmera,
-        sobre a placa. Massa em gramas, distâncias em milímetros.
+        sobre a placa. Internamente, massa em gramas e distâncias em milímetros; a unidade exibida se escolhe em Critérios.
       </p>
       <p>
         <b>Centro de massa:</b> média ponderada dos centros de massa dos itens, CM = Σ(mᵢ·pᵢ)/Σmᵢ. Sem CM informado, usamos o centro

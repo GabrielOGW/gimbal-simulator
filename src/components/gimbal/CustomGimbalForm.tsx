@@ -5,48 +5,66 @@ import type { Gimbal } from "@/lib/gimbal/types";
 import { validateGimbal } from "@/lib/equipment/validation";
 import { newId } from "@/lib/setup/factory";
 import { Button, TextField } from "@/components/ui/controls";
+import { useUnits } from "@/components/ui/units";
+import { fromDisplayLength, fromDisplayMass, lengthFieldText, massFieldText, readField, type DisplayUnits } from "@/lib/units";
 
-const n = (s: string) => Number(s.replace(",", "."));
+type Fields = { max: string; min: string; plate: string; hMin: string; hMax: string; roll: string; pan: string };
+/** Valores do gimbal em g/mm, na mesma forma dos campos. */
+const values = (g: Gimbal) => ({
+  max: g.payload.maximum,
+  min: g.payload.minimum,
+  plate: g.adjustmentRanges.plate.max,
+  hMin: g.adjustmentRanges.height.min,
+  hMax: g.adjustmentRanges.height.max,
+  roll: g.adjustmentRanges.roll.max,
+  pan: g.adjustmentRanges.pan.max,
+});
+const texts = (g: Gimbal, u: DisplayUnits): Fields => {
+  const v = values(g);
+  return {
+    max: massFieldText(v.max, u),
+    min: massFieldText(v.min, u),
+    plate: lengthFieldText(v.plate, u),
+    hMin: lengthFieldText(v.hMin, u),
+    hMax: lengthFieldText(v.hMax, u),
+    roll: lengthFieldText(v.roll, u),
+    pan: lengthFieldText(v.pan, u),
+  };
+};
 
 export function CustomGimbalForm({ templates, initial, onSave, onCancel }: { templates: Gimbal[]; initial?: Gimbal; onSave: (g: Gimbal) => void; onCancel: () => void }) {
   const [templateId, setTemplateId] = useState(initial?.id ?? templates[0]?.id ?? "");
   const base = initial ?? templates.find((t) => t.id === templateId) ?? templates[0]!;
   const [name, setName] = useState(initial?.name ?? "");
-  const [max, setMax] = useState(String(base.payload.maximum));
-  const [min, setMin] = useState(String(base.payload.minimum));
-  const [plate, setPlate] = useState(String(base.adjustmentRanges.plate.max));
-  const [hMin, setHMin] = useState(String(base.adjustmentRanges.height.min));
-  const [hMax, setHMax] = useState(String(base.adjustmentRanges.height.max));
-  const [roll, setRoll] = useState(String(base.adjustmentRanges.roll.max));
-  const [pan, setPan] = useState(String(base.adjustmentRanges.pan.max));
+  const u = useUnits();
+  const [fields, setFields] = useState<Fields>(() => texts(base, u));
+  const set = (k: keyof Fields) => (v: string) => setFields((f) => ({ ...f, [k]: v }));
   const [errors, setErrors] = useState<string[]>([]);
 
   const applyTemplate = (id: string) => {
     setTemplateId(id);
     const t = templates.find((x) => x.id === id);
-    if (!t) return;
-    setMax(String(t.payload.maximum));
-    setMin(String(t.payload.minimum));
-    setPlate(String(t.adjustmentRanges.plate.max));
-    setHMin(String(t.adjustmentRanges.height.min));
-    setHMax(String(t.adjustmentRanges.height.max));
-    setRoll(String(t.adjustmentRanges.roll.max));
-    setPan(String(t.adjustmentRanges.pan.max));
+    if (t) setFields(texts(t, u));
   };
 
   const save = () => {
+    // Campo não editado devolve o valor original (sem arredondar pela conversão).
+    const orig = texts(base, u);
+    const ov = values(base);
+    const mass = (k: "max" | "min") => readField(fields[k], orig[k], ov[k], (v) => fromDisplayMass(v, u));
+    const len = (k: "plate" | "hMin" | "hMax" | "roll" | "pan") => readField(fields[k], orig[k], ov[k], (v) => fromDisplayLength(v, u));
     const g: Gimbal = {
       ...base,
       id: initial?.id ?? newId("user-gimbal"),
       name: name.trim(),
       brand: "Personalizado",
-      payload: { minimum: n(min), maximum: n(max) },
+      payload: { minimum: mass("min"), maximum: mass("max") },
       payloadSource: { kind: "user" },
       adjustmentRanges: {
-        plate: { min: -n(plate), max: n(plate) },
-        height: { min: n(hMin), max: n(hMax) },
-        roll: { min: -n(roll), max: n(roll) },
-        pan: { min: -n(pan), max: n(pan) },
+        plate: { min: -len("plate"), max: len("plate") },
+        height: { min: len("hMin"), max: len("hMax") },
+        roll: { min: -len("roll"), max: len("roll") },
+        pan: { min: -len("pan"), max: len("pan") },
       },
       geometrySource: { kind: "estimated", note: `Geometria copiada de ${base.name}` },
       custom: true,
@@ -72,16 +90,16 @@ export function CustomGimbalForm({ templates, initial, onSave, onCancel }: { tem
         </label>
       )}
       <div className="grid grid-cols-2 gap-3">
-        <TextField label="Carga mínima" type="number" unit="g" value={min} onChange={setMin} />
-        <TextField label="Carga máxima" type="number" unit="g" value={max} onChange={setMax} required />
+        <TextField label="Carga mínima" type="number" unit={u.mass} value={fields.min} onChange={set("min")} />
+        <TextField label="Carga máxima" type="number" unit={u.mass} value={fields.max} onChange={set("max")} required />
       </div>
       <p className="label pt-1">Curso dos ajustes</p>
       <div className="grid grid-cols-2 gap-3">
-        <TextField label="Placa ±" type="number" unit="mm" value={plate} onChange={setPlate} />
-        <TextField label="Roll ±" type="number" unit="mm" value={roll} onChange={setRoll} />
-        <TextField label="Altura mín." type="number" unit="mm" value={hMin} onChange={setHMin} />
-        <TextField label="Altura máx." type="number" unit="mm" value={hMax} onChange={setHMax} />
-        <TextField label="Pan ±" type="number" unit="mm" value={pan} onChange={setPan} />
+        <TextField label="Placa ±" type="number" unit={u.length} value={fields.plate} onChange={set("plate")} />
+        <TextField label="Roll ±" type="number" unit={u.length} value={fields.roll} onChange={set("roll")} />
+        <TextField label="Altura mín." type="number" unit={u.length} value={fields.hMin} onChange={set("hMin")} />
+        <TextField label="Altura máx." type="number" unit={u.length} value={fields.hMax} onChange={set("hMax")} />
+        <TextField label="Pan ±" type="number" unit={u.length} value={fields.pan} onChange={set("pan")} />
       </div>
       {errors.length > 0 && <ul className="space-y-0.5 text-xs text-stop">{errors.map((e) => <li key={e}>• {e}</li>)}</ul>}
       <div className="flex justify-end gap-2 pt-1">
