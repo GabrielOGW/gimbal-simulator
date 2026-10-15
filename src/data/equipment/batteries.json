@@ -6,14 +6,15 @@
     "category": "battery",
     "weight": 83,
     "dimensions": {
-      "width": 37.6,
-      "height": 23.3,
-      "depth": 50.6
+      "width": 38.7,
+      "height": 22.7,
+      "depth": 51.7
     },
     "source": {
       "kind": "official",
-      "reference": "sony.com — NP-FZ100",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://store.sony.co.th/products/np-fz100",
+      "checkedAt": "2026-10-14",
+      "note": "Loja oficial Sony Tailândia. Valor conferido no resultado de busca."
     },
     "metadata": {
       "internal": true
@@ -26,13 +27,13 @@
     "category": "battery",
     "weight": 80,
     "dimensions": {
-      "width": 38,
+      "width": 38.4,
       "height": 21,
-      "depth": 56
+      "depth": 56.8
     },
     "source": {
       "kind": "estimated",
-      "note": "Valor aproximado — confira o seu modelo."
+      "note": "Canon não publica peso/dimensões da LP-E6NH; diz que tem o mesmo tamanho da LP-E6N (80 g na loja Canon UK). Dimensões de revenda."
     },
     "metadata": {
       "internal": true
@@ -43,15 +44,17 @@
     "name": "Sony BP-U70",
     "brand": "Sony",
     "category": "battery",
-    "weight": 400,
+    "weight": 450,
     "dimensions": {
-      "width": 40,
-      "height": 98,
-      "depth": 70
+      "width": 41.5,
+      "height": 84.5,
+      "depth": 69.7
     },
     "source": {
-      "kind": "estimated",
-      "note": "Valor aproximado — confira o seu modelo."
+      "kind": "official",
+      "reference": "https://pro.sony/ue_US/pdf/bp-u70",
+      "checkedAt": "2026-10-14",
+      "note": "Ficha em PDF da Sony: aprox. 450 g; 41,5 × 84,5 × 69,7 mm (L × A × P)."
     }
   },
   {

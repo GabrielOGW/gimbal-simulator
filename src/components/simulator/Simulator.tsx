@@ -8,6 +8,7 @@ import { analyzeSetup, type SetupAnalysis } from "@/lib/simulation/analyze";
 import { setupNotices } from "@/lib/setup/compatibility";
 import { resolveItems } from "@/lib/setup/factory";
 import { exportSetup, importSetup } from "@/lib/setup/serialization";
+import { decodeShareToken, encodeShareToken, SHARE_PARAM, tokenFromHash } from "@/lib/setup/share";
 import { downloadJSON, loadJSON, saveJSON, STORAGE_KEYS } from "@/lib/storage/local";
 import { CustomEquipmentForm } from "@/components/equipment/CustomEquipmentForm";
 import { EquipmentPicker } from "@/components/equipment/EquipmentPicker";
@@ -42,12 +43,24 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
   const hydrated = useRef(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  // Persistência local (carrega uma vez, salva com debounce)
+  // Persistência local (carrega uma vez, salva com debounce). Um link
+  // compartilhado (#s=...) tem prioridade sobre o setup salvo.
   useEffect(() => {
     const saved = loadJSON<Partial<SimState>>(STORAGE_KEYS.state);
     if (saved?.setup) dispatch({ type: "hydrate", state: saved });
     hydrated.current = true;
-  }, []);
+    const token = tokenFromHash(window.location.hash);
+    if (!token) return;
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    decodeShareToken(token)
+      .then((text) => {
+        const r = importSetup(text, new Set(equipmentIndex(catalog, saved?.customEquipment ?? []).keys()), new Set(allGimbals(catalog, saved?.customGimbals ?? []).map((g) => g.id)));
+        if (!r.ok) return setToast({ tone: "error", lines: ["Link compartilhado inválido:", ...r.errors] });
+        dispatch({ type: "load_setup", setup: r.setup, customEquipment: r.customEquipment, customGimbal: r.customGimbal });
+        setToast({ tone: r.warnings.length ? "warning" : "info", lines: [`Setup compartilhado “${r.setup.name}” aberto.`, ...r.warnings] });
+      })
+      .catch(() => setToast({ tone: "error", lines: ["Link compartilhado corrompido ou incompleto."] }));
+  }, [catalog]);
   useEffect(() => {
     if (!hydrated.current) return;
     const t = setTimeout(() => {
@@ -79,6 +92,37 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
   }, [resolved, gimbal, setup.adjustments, setup.pose, settings]);
   const notices = useMemo(() => setupNotices(resolved), [resolved]);
 
+  // Atalhos: desfazer/refazer, remover item, limpar seleção. Ignorados ao digitar.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable)) return;
+      if (document.querySelector('[role="dialog"]')) return;
+      const mod = e.metaKey || e.ctrlKey;
+      const key = e.key.toLowerCase();
+      if (mod && key === "z") {
+        e.preventDefault();
+        dispatch({ type: e.shiftKey ? "redo" : "undo" });
+      } else if (mod && key === "y") {
+        e.preventDefault();
+        dispatch({ type: "redo" });
+      } else if (key === "delete" || key === "backspace") {
+        e.preventDefault();
+        dispatch({ type: "remove_selected" });
+      } else if (key === "escape") {
+        dispatch({ type: "select", instanceId: null });
+      }
+    };
+    // Soltar o mouse encerra um gesto contínuo (arraste/slider) → próximo passo vira novo "desfazer"
+    const onUp = () => dispatch({ type: "end_gesture" });
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerup", onUp);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerup", onUp);
+    };
+  }, []);
+
   const onSelect = useCallback((id: string | null) => dispatch({ type: "select", instanceId: id }), []);
   const onMove = useCallback(
     (id: string, change: { position?: { x: number; y: number; z: number }; rotation?: { x: number; y: number; z: number } }) =>
@@ -91,6 +135,20 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
     const slug = setup.name.toLowerCase().normalize("NFD").replace(/[^\w]+/g, "-").replace(/^-|-$/g, "") || "setup";
     downloadJSON(`${slug}.gimbal.json`, file);
     setToast({ tone: "info", lines: ["Setup exportado em JSON."] });
+  };
+  const doShare = async () => {
+    try {
+      const token = await encodeShareToken(exportSetup(setup, byId, gimbal));
+      const url = `${window.location.origin}${window.location.pathname}#${SHARE_PARAM}=${token}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        setToast({ tone: "info", lines: ["Link do setup copiado.", "Quem abrir verá este setup, incluindo equipamentos personalizados."] });
+      } catch {
+        window.prompt("Copie o link do setup:", url);
+      }
+    } catch {
+      setToast({ tone: "error", lines: ["Este navegador não suporta a geração do link. Use Exportar."] });
+    }
   };
   const doImport = async (f: File) => {
     const text = await f.text();
@@ -275,6 +333,10 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
           aria-label="Nome do setup"
         />
         <nav className="ml-auto flex items-center gap-0.5">
+          <IconButton icon="undo" label="Desfazer (Ctrl+Z)" disabled={!state.past.length} onClick={() => dispatch({ type: "undo" })} />
+          <IconButton icon="redo" label="Refazer (Ctrl+Shift+Z)" disabled={!state.future.length} onClick={() => dispatch({ type: "redo" })} />
+          <span className="mx-1 hidden h-5 w-px bg-ink-700 sm:block" />
+          <HeaderBtn icon="link" label="Compartilhar" onClick={() => void doShare()} />
           <HeaderBtn icon="folder" label="Presets" onClick={() => setModal({ kind: "presets" })} />
           <HeaderBtn icon="upload" label="Importar" onClick={() => fileInput.current?.click()} />
           <HeaderBtn icon="download" label="Exportar" onClick={doExport} />
@@ -402,11 +464,12 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
               const wasCustom = modal.initial?.custom === true;
               dispatch({ type: "upsert_custom_equipment", equipment: e });
               if (!wasCustom) {
-                if (modal.replaceInstance) dispatch({ type: "remove", instanceId: modal.replaceInstance });
-                dispatch({ type: "add", equipment: e });
+                // Cópia editável de um item já montado: mantém posição e rotação
+                if (modal.replaceInstance) dispatch({ type: "replace_equipment", instanceId: modal.replaceInstance, equipment: e });
+                else dispatch({ type: "add", equipment: e });
               }
               setModal(null);
-              setToast({ tone: "info", lines: [wasCustom ? `“${e.name}” atualizado.` : `“${e.name}” cadastrado e adicionado.`] });
+              setToast({ tone: "info", lines: [wasCustom ? `“${e.name}” atualizado.` : modal.replaceInstance ? `“${e.name}” criado no lugar do original.` : `“${e.name}” cadastrado e adicionado.`] });
             }}
           />
         )}
@@ -471,7 +534,7 @@ export function Simulator({ catalog }: { catalog: Catalog }) {
   );
 }
 
-function HeaderBtn({ icon, label, onClick }: { icon: "folder" | "upload" | "download" | "new"; label: string; onClick: () => void }) {
+function HeaderBtn({ icon, label, onClick }: { icon: "folder" | "upload" | "download" | "new" | "link"; label: string; onClick: () => void }) {
   return (
     <button
       type="button"

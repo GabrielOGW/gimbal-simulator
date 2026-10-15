@@ -3,15 +3,16 @@
     "id": "dji-rs4-pro",
     "name": "DJI RS 4 Pro",
     "brand": "DJI",
-    "weight": 1600,
+    "weight": 1507,
     "payload": {
       "minimum": 0,
       "maximum": 4500
     },
     "payloadSource": {
       "kind": "official",
-      "reference": "dji.com — RS 4 Pro especificações",
-      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+      "reference": "https://www.dji.com/global/rs-4-pro/specs",
+      "checkedAt": "2026-10-14",
+      "note": "Carga testada 4,5 kg. Peso = estabilizador (1242 g) + empunhadura (265 g), sem placas e tripé. Cursos de ajuste e geometria são estimativas."
     },
     "axes": {
       "pan": {
@@ -63,15 +64,16 @@
     "id": "dji-rs4",
     "name": "DJI RS 4",
     "brand": "DJI",
-    "weight": 1270,
+    "weight": 1269,
     "payload": {
       "minimum": 0,
       "maximum": 3000
     },
     "payloadSource": {
       "kind": "official",
-      "reference": "dji.com — RS 4 especificações",
-      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+      "reference": "https://www.dji.com/global/rs-4/specs",
+      "checkedAt": "2026-10-14",
+      "note": "Carga testada 3 kg. Peso = estabilizador (1066 g) + empunhadura (203 g), sem placas e tripé. Cursos de ajuste e geometria são estimativas."
     },
     "axes": {
       "pan": {
@@ -125,13 +127,14 @@
     "brand": "DJI",
     "weight": 890,
     "payload": {
-      "minimum": 0,
+      "minimum": 400,
       "maximum": 2000
     },
     "payloadSource": {
       "kind": "official",
-      "reference": "dji.com — RS 4 Mini especificações",
-      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+      "reference": "https://www.dji.com/global/rs-4-mini/specs",
+      "checkedAt": "2026-10-14",
+      "note": "Carga testada 0,4–2 kg. Peso com a base de engate rápido, sem tripé. Cursos de ajuste e geometria são estimativas."
     },
     "axes": {
       "pan": {
@@ -139,14 +142,14 @@
       },
       "tilt": {
         "rotationLimitDeg": {
-          "min": -112,
-          "max": 214
+          "min": -110,
+          "max": 210
         }
       },
       "roll": {
         "rotationLimitDeg": {
           "min": -95,
-          "max": 240
+          "max": 235
         }
       }
     },
@@ -183,15 +186,15 @@
     "id": "dji-rs3-pro",
     "name": "DJI RS 3 Pro",
     "brand": "DJI",
-    "weight": 1500,
+    "weight": 1408,
     "payload": {
       "minimum": 0,
       "maximum": 4500
     },
     "payloadSource": {
-      "kind": "official",
-      "reference": "dji.com — RS 3 Pro especificações",
-      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+      "kind": "estimated",
+      "reference": "https://www.cathayphoto.com.sg/photo-video-accessories/camera-stabilizers/dji-rs-3-pro",
+      "note": "4,5 kg e 1143 g (estabilizador) + 265 g (empunhadura) segundo revendas; a página da DJI não carregou para conferência."
     },
     "axes": {
       "pan": {
@@ -243,22 +246,26 @@
     "id": "dji-ronin-2",
     "name": "DJI Ronin 2",
     "brand": "DJI",
-    "weight": 6000,
+    "weight": 6300,
     "payload": {
       "minimum": 0,
       "maximum": 13600
     },
     "payloadSource": {
       "kind": "official",
-      "reference": "dji.com — Ronin 2 especificações",
-      "note": "Carga máxima testada informada pelo fabricante. Cursos de ajuste e geometria são estimativas."
+      "reference": "https://www.dji.com/global/ronin-2/specs",
+      "checkedAt": "2026-10-14",
+      "note": "Carga de referência 13,6 kg. Peso com a barra de empunhadura (5,0 kg sem). Cursos de ajuste e geometria são estimativas."
     },
     "axes": {
       "pan": {
         "rotationLimitDeg": null
       },
       "tilt": {
-        "rotationLimitDeg": null
+        "rotationLimitDeg": {
+          "min": -135,
+          "max": 135
+        }
       },
       "roll": {
         "rotationLimitDeg": {
@@ -300,15 +307,16 @@
     "id": "zhiyun-crane-4",
     "name": "Zhiyun Crane 4",
     "brand": "Zhiyun",
-    "weight": 1800,
+    "weight": 1673,
     "payload": {
       "minimum": 0,
-      "maximum": 6000
+      "maximum": 4500
     },
     "payloadSource": {
       "kind": "official",
-      "reference": "zhiyun-tech.com — Crane 4",
-      "note": "Carga máxima informada pelo fabricante. Geometria estimada."
+      "reference": "https://store.zhiyun-tech.com/products/crane-4",
+      "checkedAt": "2026-10-14",
+      "note": "Loja oficial Zhiyun: carga máxima 4,5 kg, peso líquido 1673 g. Limites de rotação vêm de revenda (Adorama). Geometria estimada."
     },
     "axes": {
       "pan": {
@@ -316,14 +324,14 @@
       },
       "tilt": {
         "rotationLimitDeg": {
-          "min": -120,
-          "max": 210
+          "min": -72,
+          "max": 142
         }
       },
       "roll": {
         "rotationLimitDeg": {
-          "min": -110,
-          "max": 250
+          "min": -251,
+          "max": 71
         }
       }
     },
@@ -360,15 +368,16 @@
     "id": "zhiyun-weebill-3s",
     "name": "Zhiyun Weebill 3S",
     "brand": "Zhiyun",
-    "weight": 1100,
+    "weight": 1055,
     "payload": {
       "minimum": 0,
       "maximum": 3000
     },
     "payloadSource": {
       "kind": "official",
-      "reference": "zhiyun-tech.com — Weebill 3S",
-      "note": "Carga máxima informada pelo fabricante. Geometria estimada."
+      "reference": "https://store.zhiyun-tech.com/products/weebill-3s",
+      "checkedAt": "2026-10-14",
+      "note": "Loja oficial Zhiyun: carga máxima 3 kg, peso líquido 1054,8 g. Limites de rotação vêm de revenda (Adorama). Geometria estimada."
     },
     "axes": {
       "pan": {
@@ -376,14 +385,14 @@
       },
       "tilt": {
         "rotationLimitDeg": {
-          "min": -90,
-          "max": 200
+          "min": -130,
+          "max": 180
         }
       },
       "roll": {
         "rotationLimitDeg": {
-          "min": -90,
-          "max": 230
+          "min": -280,
+          "max": 60
         }
       }
     },

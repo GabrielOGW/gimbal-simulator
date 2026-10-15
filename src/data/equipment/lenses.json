@@ -12,8 +12,9 @@
     },
     "source": {
       "kind": "official",
-      "reference": "sony.com — SEL2470GM2",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://www.sony.ca/en/lenses/products/sel2470gm2/spec",
+      "checkedAt": "2026-10-14",
+      "note": "Diâmetro × comprimento. Valor conferido no resultado de busca das páginas Sony."
     },
     "centerOfMass": {
       "x": 0,
@@ -41,8 +42,9 @@
     },
     "source": {
       "kind": "official",
-      "reference": "sony.com — SEL24105G",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://store.sony.co.th/blogs/en_1618277204003_14259499663395/en_1618277204003_14259499663395_specifications",
+      "checkedAt": "2026-10-14",
+      "note": "Diâmetro × comprimento."
     },
     "centerOfMass": {
       "x": 0,
@@ -70,8 +72,9 @@
     },
     "source": {
       "kind": "official",
-      "reference": "sony.com — SEL35F14GM",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://www.sony.ca/en/lenses/products/sel35f14gm/spec",
+      "checkedAt": "2026-10-14",
+      "note": "Diâmetro × comprimento. Valor conferido no resultado de busca das páginas Sony."
     },
     "centerOfMass": {
       "x": 0,
@@ -99,12 +102,13 @@
     },
     "source": {
       "kind": "official",
-      "reference": "sony.com — SEL50F12GM",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://www.sony.ca/en/lenses/products/sel50f12gm/spec",
+      "checkedAt": "2026-10-14",
+      "note": "Diâmetro × comprimento. Valor conferido no resultado de busca das páginas Sony."
     },
     "centerOfMass": {
       "x": 0,
-      "y": -13.0,
+      "y": -13,
       "z": 0
     },
     "centerOfMassSource": {
@@ -128,8 +132,9 @@
     },
     "source": {
       "kind": "official",
-      "reference": "sony.com — SEL85F14GM",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://sony.co.th/en/electronics/camera-lenses/sel85f14gm/specifications",
+      "checkedAt": "2026-10-14",
+      "note": "Diâmetro × comprimento. Primeira versão (a GM II pesa 642 g)."
     },
     "centerOfMass": {
       "x": 0,
@@ -157,12 +162,13 @@
     },
     "source": {
       "kind": "official",
-      "reference": "sony.com — SEL70200GM2",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://www.sony.ca/en/lenses/products/sel70200gm2/spec",
+      "checkedAt": "2026-10-14",
+      "note": "Sem o colar de tripé. Diâmetro × comprimento. Valor conferido no resultado de busca das páginas Sony."
     },
     "centerOfMass": {
       "x": 0,
-      "y": -24.0,
+      "y": -24,
       "z": 0
     },
     "centerOfMassSource": {
@@ -186,8 +192,9 @@
     },
     "source": {
       "kind": "official",
-      "reference": "canon — RF24-70mm F2.8 L IS USM",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://www.canon.co.uk/lenses/rf-24-70mm-f2-8l-usm-lens/specifications/",
+      "checkedAt": "2026-10-14",
+      "note": "Diâmetro × comprimento com o zoom recolhido."
     },
     "centerOfMass": {
       "x": 0,
@@ -215,8 +222,9 @@
     },
     "source": {
       "kind": "official",
-      "reference": "canon — RF24-105mm F4 L IS USM",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://www.canon-europe.com/lenses/canon-rf-24-105mm-f-4l-is-usm-lens/specifications/",
+      "checkedAt": "2026-10-14",
+      "note": "Diâmetro × comprimento com o zoom recolhido."
     },
     "centerOfMass": {
       "x": 0,
@@ -243,9 +251,9 @@
       "depth": 121
     },
     "source": {
-      "kind": "official",
-      "reference": "sigma-global.com — 18-35mm F1.8 DC HSM | Art",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "kind": "estimated",
+      "reference": "https://www.sigma-global.com/en/lenses/a013_18_35_18/",
+      "note": "A Sigma publica 810 g e φ78 × 121 mm só para a montagem SA; a versão EF não tem valor próprio na ficha. Revendas repetem os mesmos números para EF."
     },
     "centerOfMass": {
       "x": 0,
@@ -277,7 +285,7 @@
     },
     "centerOfMass": {
       "x": 0,
-      "y": -12.0,
+      "y": -12,
       "z": 0
     },
     "centerOfMassSource": {

@@ -19,6 +19,21 @@ describe("catálogo inicial", async () => {
   it("todo item declara a origem do dado", () => {
     for (const e of catalog.equipment) expect(["official", "estimated"]).toContain(e.source.kind);
   });
+  it("official exige reference (URL da ficha) e checkedAt", () => {
+    const sources = [
+      ...catalog.equipment.map((e) => [e.id, e.source] as const),
+      ...catalog.gimbals.flatMap((g) => [[`${g.id} (carga)`, g.payloadSource] as const, [`${g.id} (geometria)`, g.geometrySource] as const]),
+    ];
+    const official = sources.filter(([, s]) => s.kind === "official");
+    expect(official.length).toBeGreaterThan(0);
+    for (const [id, s] of official) {
+      expect(s.reference, id).toMatch(/^https:\/\//);
+      expect(s.checkedAt, id).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+  it("itens genéricos nunca são official", () => {
+    for (const e of catalog.equipment) if (e.id.startsWith("generic-")) expect(e.source.kind, e.id).toBe("estimated");
+  });
   it("contém as câmeras pedidas", () => {
     for (const id of ["sony-fx3", "sony-fx6", "sony-fx9", "canon-c70", "canon-c300-mk3", "bmd-cinema-camera-6k", "red-komodo-6k"]) {
       expect(catalog.equipment.some((e) => e.id === id)).toBe(true);
@@ -64,6 +79,11 @@ describe("validateEquipment", () => {
     const r = validateEquipment({ ...valid, centerOfMass: { x: 200, y: 0, z: 0 } });
     expect(r.ok).toBe(true);
     expect(r.warnings.length).toBe(1);
+  });
+  it("checkedAt precisa ser data ISO (AAAA-MM-DD)", () => {
+    expect(validateEquipment({ ...valid, source: { kind: "official", checkedAt: "2026-10-14" } }).ok).toBe(true);
+    expect(validateEquipment({ ...valid, source: { kind: "official", checkedAt: "14/10/2026" } }).ok).toBe(false);
+    expect(validateEquipment({ ...valid, source: { kind: "official", checkedAt: "2026-13-40" } }).ok).toBe(false);
   });
   it("CM com valor não numérico é erro", () => {
     expect(validateEquipment({ ...valid, centerOfMass: { x: "a", y: 0, z: 0 } }).ok).toBe(false);

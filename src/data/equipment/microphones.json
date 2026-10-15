@@ -7,13 +7,14 @@
     "weight": 94,
     "dimensions": {
       "width": 21.6,
-      "height": 76,
+      "height": 21.6,
       "depth": 171
     },
     "source": {
       "kind": "official",
-      "reference": "rode.com — VideoMic NTG",
-      "note": "Sem suporte de sapata."
+      "reference": "https://edge.rode.com//pdf/products/633/VMNTG%20DS%2003.pdf",
+      "checkedAt": "2026-10-14",
+      "note": "Ficha RØDE: 94 g; φ21,6 × 171 mm. Sem suporte de sapata."
     }
   },
   {
@@ -29,8 +30,9 @@
     },
     "source": {
       "kind": "official",
-      "reference": "sennheiser.com — MKE 600",
-      "note": "Sem suporte/espuma."
+      "reference": "https://www.sennheiser.com/globalassets/digizuite/41788-en-sp_1302_v1.0_mke_600_product_specification_en.pdf",
+      "checkedAt": "2026-10-14",
+      "note": "Sem pilha, sem suporte e sem espuma. φ20 × 256 mm."
     }
   }
 ]

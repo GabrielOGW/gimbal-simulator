@@ -12,8 +12,9 @@
     },
     "source": {
       "kind": "official",
-      "reference": "sony.com — ILME-FX3 especificações",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://www.sony.co.in/interchangeable-lens-cameras/products/ilme-fx3/spec",
+      "checkedAt": "2026-10-14",
+      "note": "Corpo apenas (715 g com bateria e cartão). Dimensões sem protuberâncias. Sony bloqueia acesso automatizado; valor conferido no resultado de busca da página Sony."
     },
     "mountingPoints": [
       {
@@ -49,14 +50,15 @@
     "category": "camera",
     "weight": 890,
     "dimensions": {
-      "width": 116,
-      "height": 153,
-      "depth": 114
+      "width": 114,
+      "height": 116,
+      "depth": 153
     },
     "source": {
       "kind": "official",
-      "reference": "sony.com — ILME-FX6 especificações",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://www.sony.co.uk/interchangeable-lens-cameras/products/ilme-fx6/spec",
+      "checkedAt": "2026-10-14",
+      "note": "Corpo apenas, sem bateria, cartão, alça, empunhadura e monitor. Dimensões sem protuberâncias (L 114 × A 116 × P 153 mm). Sony bloqueia acesso automatizado; valor conferido no resultado de busca da página Sony."
     },
     "mountingPoints": [
       {
@@ -66,7 +68,7 @@
         "position": {
           "x": 0,
           "y": 0,
-          "z": -76.5
+          "z": -58
         }
       },
       {
@@ -75,7 +77,7 @@
         "type": "lens_mount",
         "position": {
           "x": 0,
-          "y": 57.0,
+          "y": 76.5,
           "z": -4.5
         }
       }
@@ -92,13 +94,14 @@
     "category": "camera",
     "weight": 2000,
     "dimensions": {
-      "width": 151.7,
-      "height": 144.4,
-      "depth": 189.3
+      "width": 146,
+      "height": 142.5,
+      "depth": 229
     },
     "source": {
       "kind": "estimated",
-      "note": "Peso aproximado do corpo; dimensões sem protuberâncias. Conferir na ficha oficial."
+      "reference": "https://teltec.imgbolt.de/media/pdf/0a/35/71/sony-pxw-fx9-datenblatt.pdf",
+      "note": "Ficha Sony (cópia em PDF de distribuidor): aprox. 2,0 kg corpo apenas; 146 × 142,5 × 229 mm sem protuberâncias. Página oficial não acessível para conferência — por isso segue estimado."
     },
     "mountingPoints": [
       {
@@ -108,7 +111,7 @@
         "position": {
           "x": 0,
           "y": 0,
-          "z": -72.2
+          "z": -71.25
         }
       },
       {
@@ -117,7 +120,7 @@
         "type": "lens_mount",
         "position": {
           "x": 0,
-          "y": 94.65,
+          "y": 114.5,
           "z": -2.2
         }
       }
@@ -140,8 +143,9 @@
     },
     "source": {
       "kind": "official",
-      "reference": "canon — EOS C70 especificações",
-      "note": "Transcrito da especificação do fabricante (corpo sem bateria/cartão, salvo indicação). Confira antes do set."
+      "reference": "https://hk.canon/en/business/eos-c70/main/specification",
+      "checkedAt": "2026-10-14",
+      "note": "Corpo apenas. Dimensões L × A × P sem indicação de protuberâncias."
     },
     "mountingPoints": [
       {
@@ -151,7 +155,7 @@
         "position": {
           "x": 0,
           "y": 0,
-          "z": -65.0
+          "z": -65
         }
       },
       {
@@ -160,8 +164,8 @@
         "type": "lens_mount",
         "position": {
           "x": 0,
-          "y": 58.0,
-          "z": -5.0
+          "y": 58,
+          "z": -5
         }
       }
     ],
@@ -179,11 +183,13 @@
     "dimensions": {
       "width": 153,
       "height": 148,
-      "depth": 165
+      "depth": 168
     },
     "source": {
-      "kind": "estimated",
-      "note": "Corpo sem alça/monitor. Valores aproximados — conferir."
+      "kind": "official",
+      "reference": "https://asia.canon/en/business/eos-c300-mark-iii/main/specification",
+      "checkedAt": "2026-10-14",
+      "note": "Corpo apenas, sem empunhadura, alça e monitor (183 × 148 × 189 mm com empunhadura)."
     },
     "mountingPoints": [
       {
@@ -193,7 +199,7 @@
         "position": {
           "x": 0,
           "y": 0,
-          "z": -74.0
+          "z": -74
         }
       },
       {
@@ -202,8 +208,8 @@
         "type": "lens_mount",
         "position": {
           "x": 0,
-          "y": 82.5,
-          "z": -4.0
+          "y": 84,
+          "z": -4
         }
       }
     ],
@@ -217,15 +223,17 @@
     "name": "Blackmagic Cinema Camera 6K",
     "brand": "Blackmagic Design",
     "category": "camera",
-    "weight": 1240,
+    "weight": 1202,
     "dimensions": {
-      "width": 177,
-      "height": 116,
-      "depth": 103
+      "width": 179.8,
+      "height": 121.9,
+      "depth": 94
     },
     "source": {
-      "kind": "estimated",
-      "note": "Valores aproximados — conferir na ficha da Blackmagic."
+      "kind": "official",
+      "reference": "https://www.blackmagicdesign.com/products/blackmagiccinemacamera/techspecs/W-CIN-15",
+      "checkedAt": "2026-10-14",
+      "note": "Ficha em imagem: 7,08 × 4,80 × 3,70 in e 2,65 lb, convertidos. A ficha não diz se inclui bateria e cartão."
     },
     "mountingPoints": [
       {
@@ -235,7 +243,7 @@
         "position": {
           "x": 0,
           "y": 0,
-          "z": -58.0
+          "z": -60.95
         }
       },
       {
@@ -244,8 +252,8 @@
         "type": "lens_mount",
         "position": {
           "x": 0,
-          "y": 51.5,
-          "z": -3.0
+          "y": 47,
+          "z": -3
         }
       }
     ],
@@ -259,16 +267,17 @@
     "name": "RED Komodo 6K",
     "brand": "RED",
     "category": "camera",
-    "weight": 950,
+    "weight": 953,
     "dimensions": {
       "width": 101.6,
       "height": 101.6,
-      "depth": 95.3
+      "depth": 101.6
     },
     "source": {
       "kind": "official",
-      "reference": "red.com — KOMODO 6K especificações",
-      "note": "Corpo apenas (BRAIN). Confira antes do set."
+      "reference": "https://docs.red.com/955-0190_v1.3/955-0190_v1.3_REV-1.3_RED_PS_KOMODO_Operation_Guide/Content/A_TechSpecs/Specs_KOMODO_6K.htm",
+      "checkedAt": "2026-10-14",
+      "note": "Peso: 2,10 lb sem tampa do corpo e cartão CFast. O guia não publica dimensões; 4 × 4 × 4 in vem da página de produto da RED."
     },
     "mountingPoints": [
       {
@@ -287,7 +296,7 @@
         "type": "lens_mount",
         "position": {
           "x": 0,
-          "y": 47.65,
+          "y": 50.8,
           "z": -0.8
         }
       }
